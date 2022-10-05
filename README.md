@@ -1,2 +1,6 @@
-# tag-team
-Tag Team's senior design project: an app for a user-generated media to-do list.
+# Tag Team's Senior Design Project
+Members:
+- Ally Hays
+- Charles Myers
+- Faith Coslett
+- Joshua Malone
