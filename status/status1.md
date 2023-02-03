@@ -11,8 +11,18 @@
 6. Details Description of Goals/ Plan for Next 3 Weeks
 
 7. Confidence on completion from each team member + team average
+
 Ally:
+5
+
 Charles:
+#
+
 Faith:
+#
+
 Joshua:
+#
+
 Team Average:
+#
