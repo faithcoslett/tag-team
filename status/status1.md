@@ -50,7 +50,9 @@ Not applicable
 #
 6. Details Description of Goals/ Plan for Next 3 Weeks
 
-Answer here
+* Learn/practice dart
+
+* Write rough functions for frontend, backend, and database
 #
 7. Confidence on completion from each team member + team average
 
