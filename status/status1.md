@@ -58,7 +58,7 @@ Ally:
 5
 
 Charles:
-1-5
+5
 
 Faith:
 1-5
