@@ -30,19 +30,19 @@ We had also considered Electron, but decided to go with Flutter as it seemed to 
 
 A. Describe the challenges
 
-Answer here
+We are all new to Dart.
 
 B. Describe how you overcame them
 
-Answer here
+We are all practicing with Exercism and will share resources on our discord.
 
 C. What challenges are still left?
 
-Answer here
+This challenge is ongoing.
 
 D. What do you need help with? How can your mentor help?
 
-Answer here
+We will be emailing Ward with questions as they come up.
 #
 5. Changes/Deviation from Plan (if applicable - if not, say so!)
 
