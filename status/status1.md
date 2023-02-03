@@ -61,10 +61,10 @@ Charles:
 5
 
 Faith:
-1-5
+4
 
 Joshua:
 5
 
 Team Average:
-1-5
+19/4=4.75
