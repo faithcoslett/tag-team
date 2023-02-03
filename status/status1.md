@@ -1,16 +1,16 @@
 1. Recap of what was planned for the last 3 weeks
 
-Answer here
+We had planned to decide on a framework for our project, decide on a mentor, and meet with our mentor.
 #
 2. Tasks Completed What was done during the last 3 weeks (by whom)
 
 A. Description of tasks completed
 
-Answer here
+As a group, we researched and chose a framwork for our project, chose Ward as our mentor, and met with Ward.
 
 B. Your choice of quantifiable metric(s)
 
-Answer here
+We had 2 meetings
 #
 3. Successes
 
