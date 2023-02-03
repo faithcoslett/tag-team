@@ -64,7 +64,7 @@ Faith:
 1-5
 
 Joshua:
-1-5
+5
 
 Team Average:
 1-5
