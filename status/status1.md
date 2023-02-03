@@ -3,7 +3,9 @@
 2. Tasks Completed What was done during the last 3 weeks (by whom)
 
 3. Successes
-
+  A. What are your accomplishments?
+  B. What solutions were successful?
+  C. Were there other things that you tried that did not work and why
 4. Roadblocks/Challenges
 
 5. Changes/Deviation from Plan (if applicable - if not, say so!)
@@ -16,7 +18,7 @@ Ally:
 5
 
 Charles:
-5
+1-5
 
 Faith:
 1-5
