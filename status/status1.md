@@ -1,72 +1,79 @@
-1. Recap of what was planned for the last 3 weeks
+### 1. Recap of what was planned for the last 3 weeks
 
 We had planned to decide on a framework for our project, decide on a mentor, and meet with our mentor.
-#
-2. Tasks Completed What was done during the last 3 weeks (by whom)
 
-A. Description of tasks completed
+---
+
+### 2. Tasks Completed What was done during the last 3 weeks (by whom)
+
+#### A. Description of tasks completed
 
 As a group, we researched and chose a framwork for our project, chose Ward as our mentor, and met with Ward.
 
-B. Your choice of quantifiable metric(s)
+#### B. Your choice of quantifiable metric(s)
 
 We had 2 meetings
-#
-3. Successes
 
-A. What are your accomplishments?
+---
+
+### 3. Successes
+
+#### A. What are your accomplishments?
 
 We decided on a framework for our project.
 
-B. What solutions were successful?
+#### B. What solutions were successful?
 
 We chose Flutter.
 
-C. Were there other things that you tried that did not work and why
+#### C. Were there other things that you tried that did not work and why
 
 We had also considered Electron, but decided to go with Flutter as it seemed to fit our project better.
-#
-4. Roadblocks/Challenges
 
-A. Describe the challenges
+---
+
+### 4. Roadblocks/Challenges
+
+#### A. Describe the challenges
 
 We are all new to Dart.
 
-B. Describe how you overcame them
+#### B. Describe how you overcame them
 
 We are all practicing with Exercism and will share resources on our discord.
 
-C. What challenges are still left?
+#### C. What challenges are still left?
 
 This challenge is ongoing.
 
-D. What do you need help with? How can your mentor help?
+#### D. What do you need help with? How can your mentor help?
 
 We will be emailing Ward with questions as they come up.
-#
-5. Changes/Deviation from Plan (if applicable - if not, say so!)
+
+---
+
+### 5. Changes/Deviation from Plan (if applicable - if not, say so!)
 
 Not applicable
-#
-6. Details Description of Goals/ Plan for Next 3 Weeks
 
-* Learn/practice dart
+---
 
-* Write rough functions for frontend, backend, and database
-#
-7. Confidence on completion from each team member + team average
+### 6. Details Description of Goals/ Plan for Next 3 Weeks
 
-Ally:
-5
+- Learn/practice dart
 
-Charles:
-5
+- Write rough functions for frontend, backend, and database
 
-Faith:
-4
+---
 
-Joshua:
-5
+### 7. Confidence on completion from each team member + team average
 
-Team Average:
-19/4=4.75
+- Ally: 5
+
+- Charles: 5
+
+- Faith: 4
+
+- Joshua: 5
+
+- Team Average: 19/4=4.75
