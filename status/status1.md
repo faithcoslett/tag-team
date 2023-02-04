@@ -1,6 +1,6 @@
 ### 1. Recap of what was planned for the last 3 weeks
 
-We had planned to decide on a framework for our project and gain experience in it, decide on a mentor, and meet with our mentor.
+We had planned to decide on a framework for our project and gain experience in it, decide on a mentor, and meet with our mentor for the first time.
 
 ---
 
@@ -8,7 +8,7 @@ We had planned to decide on a framework for our project and gain experience in i
 
 #### A. Description of tasks completed
 
-As a group during a personal team meeting, we researched and chose a framwork for our project, Flutter/Dart. We each have independently downloaded the framework and started gaining experience with it through experimenting and learning the language. We also chose Ward as our mentor, and met with him to gain some advice on Flutter/Dart.
+As a group during a personal team meeting, we researched and chose a framework for our project, Flutter/Dart. We each have independently downloaded the framework and started gaining experience with it through experimenting and learning the language. We also chose Ward as our mentor, and met with him to gain some advice on Flutter/Dart.
 
 #### B. Your choice of quantifiable metric(s)
 
@@ -28,7 +28,7 @@ We needed a cross-platform compatible framework for our app, so we chose Flutter
 
 #### C. Were there other things that you tried that did not work and why?
 
-We considered Electron as another framework, but decided to go with Flutter since its capabilities and libraries seemed more fit for our app. 
+We considered Electron as another framework, but decided to go with Flutter since its capabilities and libraries seemed more fit for our vision. 
 
 ---
 
@@ -40,7 +40,7 @@ We are all new to using Flutter and Dart, and still have to begin writing the fi
 
 #### B. Describe how you overcame them
 
-To learn the framework, we asked Ward for advice and also shared resources with each other in our Discord (codelabs, project walkthroughs, and documentation pertaining to our specific project like using SQL with Flutter).
+To learn the framework, we asked Ward for advice and also shared resources with each other in our Discord (codelabs, project walkthroughs, and documentation pertaining to our specific project needs, like using SQL with Flutter).
 
 #### C. What challenges are still left?
 
@@ -60,7 +60,7 @@ Not applicable.
 
 ### 6. Details Description of Goals/ Plan for Next 3 Weeks
 
-- Learn, practice, and ensure a working environment for Dart and Flutter
+- Learn, practice, and ensure a working environment for Flutter and Dart
 
 - Write rough functions for frontend, backend, and database
 
