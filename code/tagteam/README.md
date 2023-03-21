@@ -18,13 +18,13 @@ Frontend code for the tagteam project.
 ### First Pass
 - [x] Display media
 
-- [ ] Add Media
+- [x] Add Media
 
-- [ ] Edit Media
+- [x] Edit Media
 
-- [ ] Add Tags
+- [x] Add Tags
 
-- [ ] Filter
+- [x] Filter
 
 ### Polish
 - [ ] Display media
@@ -37,5 +37,13 @@ Frontend code for the tagteam project.
 
 - [ ] Filter
 
-### Etc.
-- [ ] Connect to Backend
+### Connect to Backend
+- [ ] Display media
+
+- [ ] Add Media
+
+- [ ] Edit Media
+
+- [ ] Add Tags
+
+- [ ] Filter
