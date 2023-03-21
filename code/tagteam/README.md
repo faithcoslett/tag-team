@@ -26,7 +26,7 @@ Frontend code for the tagteam project.
 
 - [x] Filter
 
-### Polish
+### Connect to Backend
 - [ ] Display media
 
 - [ ] Add Media
@@ -37,7 +37,7 @@ Frontend code for the tagteam project.
 
 - [ ] Filter
 
-### Connect to Backend
+### Polish
 - [ ] Display media
 
 - [ ] Add Media
