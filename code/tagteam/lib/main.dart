@@ -22,8 +22,7 @@ class _MainAppState extends State<MainApp> {
         ),
         body: Center(
           child: Container(
-            color: Colors.blueGrey,
-            alignment: Alignment.center,
+            alignment: Alignment.topCenter,
             margin: const EdgeInsets.all(20),
             child: const MediaTable(),
           )
@@ -49,8 +48,8 @@ class MediaTable extends StatelessWidget{
             )
           ],
         ),
-        body: Center(
-          child: SingleChildScrollView(
+        body: SingleChildScrollView(
+
             child: Container(
               alignment: Alignment.topCenter,
               child:Table(
@@ -83,24 +82,7 @@ class MediaTable extends StatelessWidget{
               )
             )
           )
-        ),
-      ),
-    );
-  }
-}
-class EditMedia extends StatefulWidget{
-  const EditMedia({super.key});
-  @override
-  State<EditMedia> createState() => _EditMediaState();
-}
-
-class _EditMediaState extends State<EditMedia> {
-  @override
-  Widget build(BuildContext context) {
-    return  MaterialApp(
-      home: Container(
-        color: Colors.cyan,
-        child: Placeholder(),
+        //),
       ),
     );
   }
@@ -116,10 +98,75 @@ class _AddMediaState extends State<AddMedia> {
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
-      home: Container(
-        color: Colors.yellow,
-        child: Placeholder(),
-      ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Add Media')
+        ),
+        body: Center(
+          child: Container(
+            child: Form(
+              child: Column(children: [
+                TextFormField(decoration: InputDecoration(labelText: 'Title'),),
+                TextFormField(decoration: InputDecoration(labelText: 'Type'),),
+                TextFormField(decoration: InputDecoration(labelText: 'Time'),),
+                TextFormField(decoration: InputDecoration(labelText: 'Parts'),),
+                Row(
+                  children:[
+                    ElevatedButton(onPressed: ()=>{runApp(EditTags())}, child: Text('Edit Tags')),
+                    Text('tags'),
+                  ]
+                ),
+                ButtonBar(children: [
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Cancel')),
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Submit')),
+                ],)
+              ],),
+            )
+          )
+        )
+      )
+    );
+  }
+}
+
+class EditMedia extends StatefulWidget{
+  const EditMedia({super.key});
+  @override
+  State<EditMedia> createState() => _EditMediaState();
+}
+
+class _EditMediaState extends State<EditMedia> {
+  @override
+  Widget build(BuildContext context) {
+    return  MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Media')
+        ),
+        body: Center(
+          child: Container(
+            child: Form(
+              child: Column(children: [
+                TextFormField(decoration: InputDecoration(labelText: 'Title'),),
+                TextFormField(decoration: InputDecoration(labelText: 'Type'),),
+                TextFormField(decoration: InputDecoration(labelText: 'Time'),),
+                TextFormField(decoration: InputDecoration(labelText: 'Parts'),),
+                Row(
+                  children:[
+                    ElevatedButton(onPressed: ()=>{runApp(EditTags())}, child: Text('Edit Tags')),
+                    Text('tags'),
+                  ]
+                ),
+                ButtonBar(children: [
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Cancel')),
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Delete')),
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Submit')),
+                ],)
+              ],),
+            )
+          )
+        )
+      )
     );
   }
 }
@@ -134,9 +181,69 @@ class _FilterState extends State<Filter> {
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
-      home: Container(
-        color: Colors.pink,
-        child: Placeholder(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Filter')
+        ),
+        body:
+        Container(
+          child: Form(
+              child: Column(children: [
+                TextFormField(decoration: InputDecoration(labelText: 'Title'),),
+                Row(
+                  children:[
+                    Text('Type:'),
+                    SingleChildScrollView(child: Column(
+                      children: [
+                        Row(children: [
+                          Checkbox(value: true, onChanged: null),
+                          Text('TV Show')
+                        ],),
+                        Row(children: [
+                          Checkbox(value: false, onChanged: null),
+                          Text('Movie')
+                        ],),
+                        Row(children: [
+                          Checkbox(value: false, onChanged: null),
+                          Text('Podcast')
+                        ],),
+                        Row(children: [
+                          Checkbox(value: false, onChanged: null),
+                          Text('Book')
+                        ],),
+                        Row(children: [
+                          Checkbox(value: false, onChanged: null),
+                          Text('Game')
+                        ],),
+                      ]),
+                    )
+                  ]
+                ),
+                Row(
+                  children:[
+                    Text('Tags:'),
+                    SingleChildScrollView(
+                      child: Column(
+                      children: [
+                        Row(children: [
+                          Checkbox(value: true, onChanged: null),
+                          Text('Tag')
+                        ],),
+                        Row(children: [
+                          Checkbox(value: false, onChanged: null),
+                          Text('Tag')
+                        ],),
+                      ]),
+                    )
+                  ]
+                ),
+                ButtonBar(children: [
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Cancel')),
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Submit')),
+                ],)
+              ],),
+            )
+        ),
       ),
     );
   }
@@ -152,9 +259,39 @@ class _EditTagsState extends State<EditTags> {
   @override
   Widget build(BuildContext context) {
     return  MaterialApp(
-      home: Container(
-        color: Colors.green,
-        child: Placeholder(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Edit Tags')
+        ),
+        body:
+        Container(
+          child: Form(
+              child: Column(children: [
+                TextFormField(decoration: InputDecoration(labelText: 'New Tags'),),
+                Row(
+                  children:[
+                    Text('Tags:'),
+                    SingleChildScrollView(child: Column(
+                      children: [
+                        Row(children: [
+                          Checkbox(value: true, onChanged: null),
+                          Text('Tag')
+                        ],),
+                        Row(children: [
+                          Checkbox(value: false, onChanged: null),
+                          Text('Tag')
+                        ],),
+                      ]),
+                    )
+                  ]
+                ),
+                ButtonBar(children: [
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Cancel')),
+                  TextButton(onPressed: ()=>{runApp(MainApp())}, child: Text('Submit')),
+                ],)
+              ],),
+            )
+        ),
       ),
     );
   }
