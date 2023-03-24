@@ -8,12 +8,10 @@
 ### 2. Tasks Completed: What was done during the last 3 weeks (by whom)
 
 #### A. Description of tasks completed
-Ally has coded the framework for the frontend.
-
-Joshua has decided on a design for the database.
+As a group, we finalized what fields we wanted entries in our database to contain by default. Ally has implemented the framework for the frontend and pushed her code to her branch. This code includes five widgets. Joshua and Charles have decided on the standard SQL backend to use for our database and have created a diagram of our finalized database design. Faith has designed and planned the backend functions. We also met with Ward to get advice on whether our database should have a table of IDs for use in indexing and faster search times. We decided we should, since the searching of our app has more focus and utilization than our inserting.
 
 #### B. Your choice of quantifiable metric(s)
-Ally has coded 5 widgets.
+The number of tangible things we have created, which includes the frontend framework code, five widgets, and the final database diagram.
 
 
 ---
@@ -21,29 +19,29 @@ Ally has coded 5 widgets.
 ### 3. Successes
 
 #### A. What are your accomplishments?
-
+The code for the frontend has been pushed, and we have finalized and improved our database design. The backend and database are ready to be implemented, and can now be written with the frontend in mind.
 
 #### B. What solutions were successful?
-
+Communicating throughout designing the database was helpful. This let very member give suggestions so we could find the better design sooner rather than later. Our meeting with Ward also helped us decide on whether to have an indexing table or not. His advice made it clear we should, since searching is the point of our app and inserts are done after slow manual input.
 
 #### C. Were there other things that you tried that did not work and why?
-
+Not applicable, we have not had to make a switch due to a failed solution so far.
 
 ---
 
 ### 4. Roadblocks/Challenges
 
 #### A. Describe the challenges
-
+Our main challenge is still busy schedules and other responsibilities. Members lacking time to dedicate to the project without having more immediate deadlines has been the biggest obstacle of progress. 
 
 #### B. Describe how you overcame them
-
+Ally was able to push the frontend code by completing enough external work to allow for several dedicated hours to be set aside for this class. Joshua, Charles, and Faith have dealt with busy schedules by finalizing design work, which is more easily done across shorter spans of time than implementation.  
 
 #### C. What challenges are still left?
-
+Pushing code changes for the backend and database, followed by integration and debugging.
 
 #### D. What do you need help with? How can your mentor help?
-
+We need no assistance currently, and will come to Ward with questions if needed.
 
 ---
 
@@ -54,7 +52,8 @@ Not applicable.
 ---
 
 ### 6. Description of Goals/Plan for Next 3 Weeks
-- Connect our components (e.g. frontend to backend.)
+- Push database and backend code
+- Integrate, ensure our backend/frontend/database connect
 - Tidy up the interface
 
 ---
@@ -63,10 +62,10 @@ Not applicable.
 
 - Ally: 5
 
-- Charles: 
+- Charles: 5
 
-- Faith: 
+- Faith: 4
 
-- Joshua: 
+- Joshua: 5
 
 - Team Average: 19/4 = 4.75
