@@ -1,16 +1,19 @@
 ### 1. Recap of what was planned for the last 3 weeks
 
-
+- Decide on the package we want to use for our database
+- Begin pushing changes to separate backend, frontend, and database branches that include the rough functions needed for each
 
 ---
 
 ### 2. Tasks Completed: What was done during the last 3 weeks (by whom)
 
 #### A. Description of tasks completed
+Ally has coded the framework for the frontend.
 
+Joshua has decided on a design for the database.
 
 #### B. Your choice of quantifiable metric(s)
-
+Ally has coded 5 widgets.
 
 
 ---
@@ -51,8 +54,8 @@ Not applicable.
 ---
 
 ### 6. Description of Goals/Plan for Next 3 Weeks
--
--
+- Connect our components (e.g. frontend to backend.)
+- Tidy up the interface
 
 ---
 
