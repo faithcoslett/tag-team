@@ -10,9 +10,10 @@ import 'package:tagteam/Tag.dart';
 import 'package:tagteam/Title.dart';
 
 void main() async {
-  final dir = await getApplicationSupportDirectory();
-  final isar =
-      await Isar.open(schemas: [TitleSchema, TagSchema], directory: dir.path);
+  WidgetsFlutterBinding.ensureInitialized();
+  //doesnt work on web vvvvvvvvvvvv
+  //final dir = await getApplicationSupportDirectory();
+  final isar = await Isar.open(schemas: [TitleSchema, TagSchema]);
   runApp(const MainApp());
 }
 
