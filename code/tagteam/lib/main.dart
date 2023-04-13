@@ -136,14 +136,16 @@ class AddMedia extends StatefulWidget {
 class _AddMediaState extends State<AddMedia> {
   final controllerTitle = TextEditingController();
   final controllerType = TextEditingController();
-  final controllerTime = TextEditingController();
+  final controllerLength = TextEditingController();
   final controllerParts = TextEditingController();
+  final controllerNotes = TextEditingController();
   @override
   void dispose() {
     controllerTitle.dispose();
     controllerType.dispose();
-    controllerTime.dispose();
+    controllerLength.dispose();
     controllerParts.dispose();
+    controllerNotes.dispose();
     super.dispose();
   }
 
@@ -167,7 +169,7 @@ class _AddMediaState extends State<AddMedia> {
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Length'),
-                    controller: controllerTime,
+                    controller: controllerLength,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Parts'),
@@ -175,6 +177,7 @@ class _AddMediaState extends State<AddMedia> {
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Notes'),
+                    controller: controllerNotes,
                   ),
                   Row(children: [
                     ElevatedButton(
@@ -190,9 +193,10 @@ class _AddMediaState extends State<AddMedia> {
                       TextButton(
                         onPressed: () => {
                           debugPrint(controllerTitle.text),
-                          debugPrint(controllerTime.text),
-                          debugPrint(controllerParts.text),
                           debugPrint(controllerType.text),
+                          debugPrint(controllerLength.text),
+                          debugPrint(controllerParts.text),
+                          debugPrint(controllerNotes.text),
                         },
                         child: Text('Cancel'),
                       ),
