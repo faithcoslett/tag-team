@@ -166,12 +166,15 @@ class _AddMediaState extends State<AddMedia> {
                     controller: controllerType,
                   ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Time'),
+                    decoration: InputDecoration(labelText: 'Length'),
                     controller: controllerTime,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Parts'),
                     controller: controllerParts,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Notes'),
                   ),
                   Row(children: [
                     ElevatedButton(
@@ -225,10 +228,13 @@ class _EditMediaState extends State<EditMedia> {
                     decoration: InputDecoration(labelText: 'Type'),
                   ),
                   TextFormField(
-                    decoration: InputDecoration(labelText: 'Time'),
+                    decoration: InputDecoration(labelText: 'Length'),
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Parts'),
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Notes'),
                   ),
                   Row(children: [
                     ElevatedButton(
