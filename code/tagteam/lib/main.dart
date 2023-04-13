@@ -358,7 +358,9 @@ class _EditTagsState extends State<EditTags> {
   @override
   Widget build(BuildContext context) {
     final controllerTag = TextEditingController();
-
+    List<String> items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
+    Future<List<Tag>> tagsFuture = getTags();
+    List<bool> _checked = [];
     @override
     void dispose() {
       controllerTag.dispose();
@@ -377,27 +379,55 @@ class _EditTagsState extends State<EditTags> {
                 controller: controllerTag,
               ),
               ElevatedButton(
-                  onPressed: () => {addTag(controllerTag.text)},
+                  onPressed: () =>
+                      {addTag(controllerTag.text), runApp(EditTags())},
                   child: Text('Submit Tag')),
-              Row(children: [
-                Text('Tags:'),
-                SingleChildScrollView(
-                  child: Column(children: [
-                    Row(
-                      children: [
-                        Checkbox(value: true, onChanged: null),
-                        Text('Tag')
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(value: false, onChanged: null),
-                        Text('Tag')
-                      ],
-                    ),
-                  ]),
-                )
-              ]),
+              Expanded(
+                child: FutureBuilder<List<Tag>>(
+                  future: tagsFuture,
+                  builder: (BuildContext context,
+                      AsyncSnapshot<List<Tag>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      List<Tag> tags = snapshot.data!;
+                      debugPrint("here2!");
+                      debugPrint("Tags List2!");
+                      debugPrint(tags.length.toString());
+                      debugPrint("Checked Length2!");
+                      debugPrint(_checked.length.toString());
+                      if (_checked.length < tags.length) {
+                        _checked = List.filled(tags.length, false);
+                        debugPrint("here!");
+                        debugPrint("Tags List!");
+                        debugPrint(tags.length.toString());
+                        debugPrint("Checked Length!");
+                        debugPrint(_checked.length.toString());
+                      }
+                      return ListView.builder(
+                        itemCount: tags.length,
+                        itemBuilder: (context, index) {
+                          return CheckboxListTile(
+                            title: Text(tags[index].tagText ?? ""),
+                            value: _checked[index],
+                            onChanged: (bool? value) {
+                              setState(() {
+                                if (_checked[index] == false) {
+                                  _checked[index] = true;
+                                  debugPrint(_checked[index].toString());
+                                } else {
+                                  _checked[index] = false;
+                                  debugPrint(_checked[index].toString());
+                                }
+                              });
+                            },
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+              ),
               ButtonBar(
                 children: [
                   TextButton(
@@ -420,5 +450,12 @@ class _EditTagsState extends State<EditTags> {
     final newTag = Tag()..tagText = tag;
     await isar.writeTxn((isar) => isar.tags.put(newTag));
     isar.close();
+  }
+
+  Future<List<Tag>> getTags() async {
+    final isar = await Isar.open(schemas: [TagSchema]);
+    List<Tag> tags = await isar.tags.where().findAll();
+    isar.close();
+    return tags;
   }
 }
