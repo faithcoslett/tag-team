@@ -47,6 +47,7 @@ class MediaTable extends StatelessWidget {
   const MediaTable({super.key});
   @override
   Widget build(BuildContext context) {
+    Future<List<MediaCollection>> mediaFuture = getMediaCollections();
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(
@@ -65,65 +66,89 @@ class MediaTable extends StatelessWidget {
             ],
           ),
           body: SingleChildScrollView(
-              child: Container(
-                  alignment: Alignment.topCenter,
-                  child: Table(
-                    border: TableBorder.all(),
-                    children: [
-                      TableRow(children: [
-                        TableCell(
-                          child: Text('Title'),
-                        ),
-                        TableCell(
-                          child: Text('Type'),
-                        ),
-                        TableCell(
-                          child: Text('Length'),
-                        ),
-                        TableCell(
-                          child: Text('Parts'),
-                        ),
-                        TableCell(
-                          child: Text('Notes'),
-                        ),
-                        TableCell(
-                          child: Text('Tags'),
-                        ),
-                        TableCell(
-                          child: Text('Edit'),
-                        ),
-                      ]),
-                      TableRow(children: [
-                        TableCell(
-                          child: Text('Title'),
-                        ),
-                        TableCell(
-                          child: Text('Type'),
-                        ),
-                        TableCell(
-                          child: Text('Length'),
-                        ),
-                        TableCell(
-                          child: Text('Parts'),
-                        ),
-                        TableCell(
-                          child: Text('Notes'),
-                        ),
-                        TableCell(
-                          child: Text('Tags'),
-                        ),
-                        TableCell(
-                          child: IconButton(
-                            onPressed: () => {runApp(EditMedia())},
-                            icon: Icon(Icons.edit),
-                          ),
-                        ),
-                      ])
-                    ],
-                  )))
+            child: Container(
+              alignment: Alignment.topCenter,
+              child: FutureBuilder<List<MediaCollection>>(
+                  future: mediaFuture,
+                  builder:
+                      (context, AsyncSnapshot<List<MediaCollection>> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      List<MediaCollection> mediaCollections = snapshot.data!;
+                      debugPrint("Inside Main!");
+                      for (final mc in mediaCollections) {
+                        print("printing MC!");
+                        //print(mc.tag.last.tagText);
+                        for (Tag tt in mc.tag) {
+                          print("printing!");
+                          print(tt.tagText);
+                        }
+                      }
+                      //debugPrint(tags.length.toString());
+                      return Table(
+                        border: TableBorder.all(),
+                        children: [
+                          TableRow(children: [
+                            TableCell(child: const Text('Title')),
+                            TableCell(child: const Text('Type')),
+                            TableCell(child: const Text('Length')),
+                            TableCell(child: const Text('Parts')),
+                            TableCell(child: const Text('Notes')),
+                            TableCell(child: const Text('Tags')),
+                            TableCell(child: const Text('Edit')),
+                          ]),
+                          for (final mediaColl in mediaCollections)
+                            TableRow(children: [
+                              TableCell(
+                                  child: Text(mediaColl.titleText.toString())),
+                              TableCell(child: Text(mediaColl.type.toString())),
+                              TableCell(
+                                  child: Text(mediaColl.length.toString())),
+                              TableCell(
+                                  child: Text(mediaColl.parts.toString())),
+                              TableCell(
+                                  child: Text(mediaColl.notes.toString())),
+                              TableCell(
+                                //child:
+                                //Text(mediaColl.tag.last.tagText.toString()),
+                                child: Wrap(
+                                  children: [
+                                    for (Tag t in mediaColl.tag)
+                                      Chip(
+                                        label: Text(t.tagText.toString()),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              TableCell(
+                                  child: IconButton(
+                                onPressed: () {},
+                                icon: const Icon(Icons.edit),
+                              ))
+                            ]),
+                        ],
+                      );
+                    }
+                  }),
+            ),
+          )
           //),
           ),
     );
+  }
+
+  Future<List<MediaCollection>> getMediaCollections() async {
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
+    List<MediaCollection> media = await isar.mediaCollections.where().findAll();
+    print("len");
+    print(media.length);
+    for (int i = 0; i < media.length; i++) {
+      await media[i].tag.load();
+    }
+    //media[2].tag.load();
+    isar.close();
+    return media;
   }
 }
 
@@ -229,7 +254,7 @@ class _AddMediaState extends State<AddMedia> {
                                     controllerParts.text,
                                     controllerNotes.text,
                                     tagsbool),
-                                //runApp(MainApp())
+                                runApp(MainApp())
                               },
                           child: Text('Accept')),
                       TextButton(
@@ -254,7 +279,6 @@ class _AddMediaState extends State<AddMedia> {
       String Notes, List<bool> tags) async {
     final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     List<Tag> alltags = await isar.tags.where().findAll();
-
     List<MediaCollection> newcoll;
     final newMedia = MediaCollection()
       ..titleText = title
@@ -266,24 +290,29 @@ class _AddMediaState extends State<AddMedia> {
     if (tags.contains(true)) {
       for (int i = 0; i < tags.length; i++) {
         if (tags[i]) {
-          debugPrint("inside if i");
+          //debugPrint("inside if i");
           newMedia.tag.add(alltags[i]);
-          debugPrint("tag");
-          debugPrint(alltags[i].tagText);
+          //debugPrint("tag");
+          //debugPrint(alltags[i].tagText);
           await isar.writeTxn((isar) async {
             await newMedia.tag.save();
           });
         }
       }
     }
-
-    print(newMedia.tag);
-    isar.close();
+    //debugPrint("Tag!");
+    //for (Tag ta in newMedia.tag) {
+    //  print(ta.tagText);
+    //}
+    //print(newMedia.tag.last.tagText);
+    await isar.close();
+    return;
   }
 
   Future<List<Tag>> getTags(List<bool> _checked) async {
-    final isar = await Isar.open(schemas: [TagSchema]);
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     List<Tag> tags = await isar.tags.where().findAll();
+
     isar.close();
     if (_checked.contains(true)) {
       List<Tag> selectedTags = [];
@@ -565,14 +594,14 @@ class _EditTagsState extends State<EditTags> {
   }
 
   void addTag(String tag) async {
-    final isar = await Isar.open(schemas: [TagSchema]);
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     final newTag = Tag()..tagText = tag;
     await isar.writeTxn((isar) => isar.tags.put(newTag));
     isar.close();
   }
 
   Future<List<Tag>> getTags() async {
-    final isar = await Isar.open(schemas: [TagSchema]);
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     List<Tag> tags = await isar.tags.where().findAll();
     isar.close();
     return tags;
