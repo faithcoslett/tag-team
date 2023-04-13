@@ -134,6 +134,19 @@ class AddMedia extends StatefulWidget {
 }
 
 class _AddMediaState extends State<AddMedia> {
+  final controllerTitle = TextEditingController();
+  final controllerType = TextEditingController();
+  final controllerTime = TextEditingController();
+  final controllerParts = TextEditingController();
+  @override
+  void dispose() {
+    controllerTitle.dispose();
+    controllerType.dispose();
+    controllerTime.dispose();
+    controllerParts.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -146,15 +159,19 @@ class _AddMediaState extends State<AddMedia> {
                 children: [
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Title'),
+                    controller: controllerTitle,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Type'),
+                    controller: controllerType,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Time'),
+                    controller: controllerTime,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Parts'),
+                    controller: controllerParts,
                   ),
                   Row(children: [
                     ElevatedButton(
@@ -166,10 +183,16 @@ class _AddMediaState extends State<AddMedia> {
                     children: [
                       TextButton(
                           onPressed: () => {runApp(MainApp())},
-                          child: Text('Cancel')),
+                          child: Text('Accept')),
                       TextButton(
-                          onPressed: () => {runApp(MainApp())},
-                          child: Text('Submit')),
+                        onPressed: () => {
+                          debugPrint(controllerTitle.text),
+                          debugPrint(controllerTime.text),
+                          debugPrint(controllerParts.text),
+                          debugPrint(controllerType.text),
+                        },
+                        child: Text('Cancel'),
+                      ),
                     ],
                   )
                 ],
