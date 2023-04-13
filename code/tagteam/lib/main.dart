@@ -371,76 +371,87 @@ class _EditTagsState extends State<EditTags> {
       home: Scaffold(
         appBar: AppBar(title: Text('Edit Tags')),
         body: Container(
-            child: Form(
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'New Tags'),
-                controller: controllerTag,
-              ),
-              ElevatedButton(
-                  onPressed: () =>
-                      {addTag(controllerTag.text), runApp(EditTags())},
-                  child: Text('Submit Tag')),
-              Expanded(
-                child: FutureBuilder<List<Tag>>(
-                  future: tagsFuture,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<List<Tag>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      List<Tag> tags = snapshot.data!;
-                      debugPrint("here2!");
-                      debugPrint("Tags List2!");
-                      debugPrint(tags.length.toString());
-                      debugPrint("Checked Length2!");
-                      debugPrint(_checked.length.toString());
-                      if (_checked.length < tags.length) {
-                        _checked = List.filled(tags.length, false);
-                        debugPrint("here!");
-                        debugPrint("Tags List!");
-                        debugPrint(tags.length.toString());
-                        debugPrint("Checked Length!");
-                        debugPrint(_checked.length.toString());
-                      }
-                      return ListView.builder(
-                        itemCount: tags.length,
-                        itemBuilder: (context, index) {
-                          return CheckboxListTile(
-                            title: Text(tags[index].tagText ?? ""),
-                            value: _checked[index],
-                            onChanged: (bool? value) {
-                              setState(() {
-                                if (_checked[index] == false) {
-                                  _checked[index] = true;
-                                  debugPrint(_checked[index].toString());
-                                } else {
-                                  _checked[index] = false;
-                                  debugPrint(_checked[index].toString());
-                                }
-                              });
-                            },
-                          );
+          child: Form(
+            child: StatefulBuilder(
+              builder: (context, setState) {
+                return Column(
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(labelText: 'New Tags'),
+                      controller: controllerTag,
+                    ),
+                    ElevatedButton(
+                      onPressed: () =>
+                          {addTag(controllerTag.text), runApp(EditTags())},
+                      child: Text('Submit Tag'),
+                    ),
+                    Expanded(
+                      child: FutureBuilder<List<Tag>>(
+                        future: tagsFuture,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Tag>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            List<Tag> tags = snapshot.data!;
+                            debugPrint("here2!");
+                            debugPrint("Tags List2!");
+                            debugPrint(tags.length.toString());
+                            debugPrint("Checked Length2!");
+                            debugPrint(_checked.length.toString());
+                            if (_checked.length < tags.length) {
+                              _checked = List.filled(tags.length, false);
+                              debugPrint("here!");
+                              debugPrint("Tags List!");
+                              debugPrint(tags.length.toString());
+                              debugPrint("Checked Length!");
+                              debugPrint(_checked.length.toString());
+                            }
+                            return ListView.builder(
+                              itemCount: tags.length,
+                              itemBuilder: (context, index) {
+                                return CheckboxListTile(
+                                  title: Text(tags[index].tagText ?? ""),
+                                  value: _checked[index],
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      if (_checked[index] == false) {
+                                        _checked[index] = true;
+                                        debugPrint(_checked[index].toString());
+                                      } else {
+                                        _checked[index] = false;
+                                        debugPrint(_checked[index].toString());
+                                      }
+                                    });
+                                  },
+                                );
+                              },
+                            );
+                          }
                         },
-                      );
-                    }
-                  },
-                ),
-              ),
-              ButtonBar(
-                children: [
-                  TextButton(
-                      onPressed: () => {runApp(MainApp())},
-                      child: Text('Cancel')),
-                  TextButton(
-                      onPressed: () => {runApp(MainApp())},
-                      child: Text('Submit')),
-                ],
-              )
-            ],
+                      ),
+                    ),
+                    ButtonBar(
+                      children: [
+                        TextButton(
+                          onPressed: () => {runApp(MainApp())},
+                          child: Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => {runApp(MainApp())},
+                          child: Text('Submit'),
+                        ),
+                      ],
+                    )
+                  ],
+                );
+              },
+            ),
           ),
-        )),
+        ),
       ),
     );
   }
