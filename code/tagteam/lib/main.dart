@@ -78,10 +78,13 @@ class MediaTable extends StatelessWidget {
                           child: Text('Type'),
                         ),
                         TableCell(
-                          child: Text('Time'),
+                          child: Text('Length'),
                         ),
                         TableCell(
                           child: Text('Parts'),
+                        ),
+                        TableCell(
+                          child: Text('Notes'),
                         ),
                         TableCell(
                           child: Text('Tags'),
@@ -98,10 +101,13 @@ class MediaTable extends StatelessWidget {
                           child: Text('Type'),
                         ),
                         TableCell(
-                          child: Text('Time'),
+                          child: Text('Length'),
                         ),
                         TableCell(
                           child: Text('Parts'),
+                        ),
+                        TableCell(
+                          child: Text('Notes'),
                         ),
                         TableCell(
                           child: Text('Tags'),

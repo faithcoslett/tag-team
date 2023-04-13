@@ -15,9 +15,9 @@ extension GetTitleCollection on Isar {
 const TitleSchema = CollectionSchema(
   name: 'Title',
   schema:
-      '{"name":"Title","idName":"id","properties":[{"name":"notes","type":"String"},{"name":"time","type":"Long"},{"name":"titleText","type":"String"}],"indexes":[],"links":[{"name":"tag","target":"Tag"}]}',
+      '{"name":"Title","idName":"id","properties":[{"name":"length","type":"String"},{"name":"notes","type":"String"},{"name":"parts","type":"Long"},{"name":"titleText","type":"String"},{"name":"type","type":"String"}],"indexes":[],"links":[{"name":"tag","target":"Tag"}]}',
   idName: 'id',
-  propertyIds: {'notes': 0, 'time': 1, 'titleText': 2},
+  propertyIds: {'length': 0, 'notes': 1, 'parts': 2, 'titleText': 3, 'type': 4},
   listProperties: {},
   indexIds: {},
   indexValueTypes: {},
@@ -60,38 +60,54 @@ void _titleSerializeNative(
     List<int> offsets,
     AdapterAlloc alloc) {
   var dynamicSize = 0;
-  final value0 = object.notes;
-  IsarUint8List? _notes;
+  final value0 = object.length;
+  IsarUint8List? _length;
   if (value0 != null) {
-    _notes = IsarBinaryWriter.utf8Encoder.convert(value0);
+    _length = IsarBinaryWriter.utf8Encoder.convert(value0);
+  }
+  dynamicSize += (_length?.length ?? 0) as int;
+  final value1 = object.notes;
+  IsarUint8List? _notes;
+  if (value1 != null) {
+    _notes = IsarBinaryWriter.utf8Encoder.convert(value1);
   }
   dynamicSize += (_notes?.length ?? 0) as int;
-  final value1 = object.time;
-  final _time = value1;
-  final value2 = object.titleText;
+  final value2 = object.parts;
+  final _parts = value2;
+  final value3 = object.titleText;
   IsarUint8List? _titleText;
-  if (value2 != null) {
-    _titleText = IsarBinaryWriter.utf8Encoder.convert(value2);
+  if (value3 != null) {
+    _titleText = IsarBinaryWriter.utf8Encoder.convert(value3);
   }
   dynamicSize += (_titleText?.length ?? 0) as int;
+  final value4 = object.type;
+  IsarUint8List? _type;
+  if (value4 != null) {
+    _type = IsarBinaryWriter.utf8Encoder.convert(value4);
+  }
+  dynamicSize += (_type?.length ?? 0) as int;
   final size = staticSize + dynamicSize;
 
   rawObj.buffer = alloc(size);
   rawObj.buffer_length = size;
   final buffer = IsarNative.bufAsBytes(rawObj.buffer, size);
   final writer = IsarBinaryWriter(buffer, staticSize);
-  writer.writeBytes(offsets[0], _notes);
-  writer.writeDateTime(offsets[1], _time);
-  writer.writeBytes(offsets[2], _titleText);
+  writer.writeBytes(offsets[0], _length);
+  writer.writeBytes(offsets[1], _notes);
+  writer.writeLong(offsets[2], _parts);
+  writer.writeBytes(offsets[3], _titleText);
+  writer.writeBytes(offsets[4], _type);
 }
 
 Title _titleDeserializeNative(IsarCollection<Title> collection, int id,
     IsarBinaryReader reader, List<int> offsets) {
   final object = Title();
   object.id = id;
-  object.notes = reader.readStringOrNull(offsets[0]);
-  object.time = reader.readDateTimeOrNull(offsets[1]);
-  object.titleText = reader.readStringOrNull(offsets[2]);
+  object.length = reader.readStringOrNull(offsets[0]);
+  object.notes = reader.readStringOrNull(offsets[1]);
+  object.parts = reader.readLongOrNull(offsets[2]);
+  object.titleText = reader.readStringOrNull(offsets[3]);
+  object.type = reader.readStringOrNull(offsets[4]);
   _titleAttachLinks(collection, id, object);
   return object;
 }
@@ -104,8 +120,12 @@ P _titleDeserializePropNative<P>(
     case 0:
       return (reader.readStringOrNull(offset)) as P;
     case 1:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
+      return (reader.readLongOrNull(offset)) as P;
+    case 3:
+      return (reader.readStringOrNull(offset)) as P;
+    case 4:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw 'Illegal propertyIndex';
@@ -115,24 +135,22 @@ P _titleDeserializePropNative<P>(
 dynamic _titleSerializeWeb(IsarCollection<Title> collection, Title object) {
   final jsObj = IsarNative.newJsObject();
   IsarNative.jsObjectSet(jsObj, 'id', object.id);
+  IsarNative.jsObjectSet(jsObj, 'length', object.length);
   IsarNative.jsObjectSet(jsObj, 'notes', object.notes);
-  IsarNative.jsObjectSet(
-      jsObj, 'time', object.time?.toUtc().millisecondsSinceEpoch);
+  IsarNative.jsObjectSet(jsObj, 'parts', object.parts);
   IsarNative.jsObjectSet(jsObj, 'titleText', object.titleText);
+  IsarNative.jsObjectSet(jsObj, 'type', object.type);
   return jsObj;
 }
 
 Title _titleDeserializeWeb(IsarCollection<Title> collection, dynamic jsObj) {
   final object = Title();
   object.id = IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity;
+  object.length = IsarNative.jsObjectGet(jsObj, 'length');
   object.notes = IsarNative.jsObjectGet(jsObj, 'notes');
-  object.time = IsarNative.jsObjectGet(jsObj, 'time') != null
-      ? DateTime.fromMillisecondsSinceEpoch(
-              IsarNative.jsObjectGet(jsObj, 'time'),
-              isUtc: true)
-          .toLocal()
-      : null;
+  object.parts = IsarNative.jsObjectGet(jsObj, 'parts');
   object.titleText = IsarNative.jsObjectGet(jsObj, 'titleText');
+  object.type = IsarNative.jsObjectGet(jsObj, 'type');
   _titleAttachLinks(collection,
       IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity, object);
   return object;
@@ -143,17 +161,16 @@ P _titleDeserializePropWeb<P>(Object jsObj, String propertyName) {
     case 'id':
       return (IsarNative.jsObjectGet(jsObj, 'id') ?? double.negativeInfinity)
           as P;
+    case 'length':
+      return (IsarNative.jsObjectGet(jsObj, 'length')) as P;
     case 'notes':
       return (IsarNative.jsObjectGet(jsObj, 'notes')) as P;
-    case 'time':
-      return (IsarNative.jsObjectGet(jsObj, 'time') != null
-          ? DateTime.fromMillisecondsSinceEpoch(
-                  IsarNative.jsObjectGet(jsObj, 'time'),
-                  isUtc: true)
-              .toLocal()
-          : null) as P;
+    case 'parts':
+      return (IsarNative.jsObjectGet(jsObj, 'parts')) as P;
     case 'titleText':
       return (IsarNative.jsObjectGet(jsObj, 'titleText')) as P;
+    case 'type':
+      return (IsarNative.jsObjectGet(jsObj, 'type')) as P;
     default:
       throw 'Illegal propertyName';
   }
@@ -272,6 +289,116 @@ extension TitleQueryFilter on QueryBuilder<Title, Title, QFilterCondition> {
     ));
   }
 
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'length',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'length',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthGreaterThan(
+    String? value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'length',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthLessThan(
+    String? value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'length',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthBetween(
+    String? lower,
+    String? upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'length',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'length',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'length',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthContains(String value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'length',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> lengthMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'length',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
   QueryBuilder<Title, Title, QAfterFilterCondition> notesIsNull() {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.isNull,
@@ -381,55 +508,54 @@ extension TitleQueryFilter on QueryBuilder<Title, Title, QFilterCondition> {
     ));
   }
 
-  QueryBuilder<Title, Title, QAfterFilterCondition> timeIsNull() {
+  QueryBuilder<Title, Title, QAfterFilterCondition> partsIsNull() {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.isNull,
-      property: 'time',
+      property: 'parts',
       value: null,
     ));
   }
 
-  QueryBuilder<Title, Title, QAfterFilterCondition> timeEqualTo(
-      DateTime? value) {
+  QueryBuilder<Title, Title, QAfterFilterCondition> partsEqualTo(int? value) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.eq,
-      property: 'time',
+      property: 'parts',
       value: value,
     ));
   }
 
-  QueryBuilder<Title, Title, QAfterFilterCondition> timeGreaterThan(
-    DateTime? value, {
+  QueryBuilder<Title, Title, QAfterFilterCondition> partsGreaterThan(
+    int? value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.gt,
       include: include,
-      property: 'time',
+      property: 'parts',
       value: value,
     ));
   }
 
-  QueryBuilder<Title, Title, QAfterFilterCondition> timeLessThan(
-    DateTime? value, {
+  QueryBuilder<Title, Title, QAfterFilterCondition> partsLessThan(
+    int? value, {
     bool include = false,
   }) {
     return addFilterConditionInternal(FilterCondition(
       type: ConditionType.lt,
       include: include,
-      property: 'time',
+      property: 'parts',
       value: value,
     ));
   }
 
-  QueryBuilder<Title, Title, QAfterFilterCondition> timeBetween(
-    DateTime? lower,
-    DateTime? upper, {
+  QueryBuilder<Title, Title, QAfterFilterCondition> partsBetween(
+    int? lower,
+    int? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return addFilterConditionInternal(FilterCondition.between(
-      property: 'time',
+      property: 'parts',
       lower: lower,
       includeLower: includeLower,
       upper: upper,
@@ -547,6 +673,115 @@ extension TitleQueryFilter on QueryBuilder<Title, Title, QFilterCondition> {
       caseSensitive: caseSensitive,
     ));
   }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeIsNull() {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.isNull,
+      property: 'type',
+      value: null,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.eq,
+      property: 'type',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeGreaterThan(
+    String? value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.gt,
+      include: include,
+      property: 'type',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeLessThan(
+    String? value, {
+    bool caseSensitive = true,
+    bool include = false,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.lt,
+      include: include,
+      property: 'type',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeBetween(
+    String? lower,
+    String? upper, {
+    bool caseSensitive = true,
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition.between(
+      property: 'type',
+      lower: lower,
+      includeLower: includeLower,
+      upper: upper,
+      includeUpper: includeUpper,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.startsWith,
+      property: 'type',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.endsWith,
+      property: 'type',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeContains(String value,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.contains,
+      property: 'type',
+      value: value,
+      caseSensitive: caseSensitive,
+    ));
+  }
+
+  QueryBuilder<Title, Title, QAfterFilterCondition> typeMatches(String pattern,
+      {bool caseSensitive = true}) {
+    return addFilterConditionInternal(FilterCondition(
+      type: ConditionType.matches,
+      property: 'type',
+      value: pattern,
+      caseSensitive: caseSensitive,
+    ));
+  }
 }
 
 extension TitleQueryLinks on QueryBuilder<Title, Title, QFilterCondition> {
@@ -568,6 +803,14 @@ extension TitleQueryWhereSortBy on QueryBuilder<Title, Title, QSortBy> {
     return addSortByInternal('id', Sort.desc);
   }
 
+  QueryBuilder<Title, Title, QAfterSortBy> sortByLength() {
+    return addSortByInternal('length', Sort.asc);
+  }
+
+  QueryBuilder<Title, Title, QAfterSortBy> sortByLengthDesc() {
+    return addSortByInternal('length', Sort.desc);
+  }
+
   QueryBuilder<Title, Title, QAfterSortBy> sortByNotes() {
     return addSortByInternal('notes', Sort.asc);
   }
@@ -576,12 +819,12 @@ extension TitleQueryWhereSortBy on QueryBuilder<Title, Title, QSortBy> {
     return addSortByInternal('notes', Sort.desc);
   }
 
-  QueryBuilder<Title, Title, QAfterSortBy> sortByTime() {
-    return addSortByInternal('time', Sort.asc);
+  QueryBuilder<Title, Title, QAfterSortBy> sortByParts() {
+    return addSortByInternal('parts', Sort.asc);
   }
 
-  QueryBuilder<Title, Title, QAfterSortBy> sortByTimeDesc() {
-    return addSortByInternal('time', Sort.desc);
+  QueryBuilder<Title, Title, QAfterSortBy> sortByPartsDesc() {
+    return addSortByInternal('parts', Sort.desc);
   }
 
   QueryBuilder<Title, Title, QAfterSortBy> sortByTitleText() {
@@ -590,6 +833,14 @@ extension TitleQueryWhereSortBy on QueryBuilder<Title, Title, QSortBy> {
 
   QueryBuilder<Title, Title, QAfterSortBy> sortByTitleTextDesc() {
     return addSortByInternal('titleText', Sort.desc);
+  }
+
+  QueryBuilder<Title, Title, QAfterSortBy> sortByType() {
+    return addSortByInternal('type', Sort.asc);
+  }
+
+  QueryBuilder<Title, Title, QAfterSortBy> sortByTypeDesc() {
+    return addSortByInternal('type', Sort.desc);
   }
 }
 
@@ -602,6 +853,14 @@ extension TitleQueryWhereSortThenBy on QueryBuilder<Title, Title, QSortThenBy> {
     return addSortByInternal('id', Sort.desc);
   }
 
+  QueryBuilder<Title, Title, QAfterSortBy> thenByLength() {
+    return addSortByInternal('length', Sort.asc);
+  }
+
+  QueryBuilder<Title, Title, QAfterSortBy> thenByLengthDesc() {
+    return addSortByInternal('length', Sort.desc);
+  }
+
   QueryBuilder<Title, Title, QAfterSortBy> thenByNotes() {
     return addSortByInternal('notes', Sort.asc);
   }
@@ -610,12 +869,12 @@ extension TitleQueryWhereSortThenBy on QueryBuilder<Title, Title, QSortThenBy> {
     return addSortByInternal('notes', Sort.desc);
   }
 
-  QueryBuilder<Title, Title, QAfterSortBy> thenByTime() {
-    return addSortByInternal('time', Sort.asc);
+  QueryBuilder<Title, Title, QAfterSortBy> thenByParts() {
+    return addSortByInternal('parts', Sort.asc);
   }
 
-  QueryBuilder<Title, Title, QAfterSortBy> thenByTimeDesc() {
-    return addSortByInternal('time', Sort.desc);
+  QueryBuilder<Title, Title, QAfterSortBy> thenByPartsDesc() {
+    return addSortByInternal('parts', Sort.desc);
   }
 
   QueryBuilder<Title, Title, QAfterSortBy> thenByTitleText() {
@@ -625,6 +884,14 @@ extension TitleQueryWhereSortThenBy on QueryBuilder<Title, Title, QSortThenBy> {
   QueryBuilder<Title, Title, QAfterSortBy> thenByTitleTextDesc() {
     return addSortByInternal('titleText', Sort.desc);
   }
+
+  QueryBuilder<Title, Title, QAfterSortBy> thenByType() {
+    return addSortByInternal('type', Sort.asc);
+  }
+
+  QueryBuilder<Title, Title, QAfterSortBy> thenByTypeDesc() {
+    return addSortByInternal('type', Sort.desc);
+  }
 }
 
 extension TitleQueryWhereDistinct on QueryBuilder<Title, Title, QDistinct> {
@@ -632,18 +899,28 @@ extension TitleQueryWhereDistinct on QueryBuilder<Title, Title, QDistinct> {
     return addDistinctByInternal('id');
   }
 
+  QueryBuilder<Title, Title, QDistinct> distinctByLength(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('length', caseSensitive: caseSensitive);
+  }
+
   QueryBuilder<Title, Title, QDistinct> distinctByNotes(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('notes', caseSensitive: caseSensitive);
   }
 
-  QueryBuilder<Title, Title, QDistinct> distinctByTime() {
-    return addDistinctByInternal('time');
+  QueryBuilder<Title, Title, QDistinct> distinctByParts() {
+    return addDistinctByInternal('parts');
   }
 
   QueryBuilder<Title, Title, QDistinct> distinctByTitleText(
       {bool caseSensitive = true}) {
     return addDistinctByInternal('titleText', caseSensitive: caseSensitive);
+  }
+
+  QueryBuilder<Title, Title, QDistinct> distinctByType(
+      {bool caseSensitive = true}) {
+    return addDistinctByInternal('type', caseSensitive: caseSensitive);
   }
 }
 
@@ -652,15 +929,23 @@ extension TitleQueryProperty on QueryBuilder<Title, Title, QQueryProperty> {
     return addPropertyNameInternal('id');
   }
 
+  QueryBuilder<Title, String?, QQueryOperations> lengthProperty() {
+    return addPropertyNameInternal('length');
+  }
+
   QueryBuilder<Title, String?, QQueryOperations> notesProperty() {
     return addPropertyNameInternal('notes');
   }
 
-  QueryBuilder<Title, DateTime?, QQueryOperations> timeProperty() {
-    return addPropertyNameInternal('time');
+  QueryBuilder<Title, int?, QQueryOperations> partsProperty() {
+    return addPropertyNameInternal('parts');
   }
 
   QueryBuilder<Title, String?, QQueryOperations> titleTextProperty() {
     return addPropertyNameInternal('titleText');
+  }
+
+  QueryBuilder<Title, String?, QQueryOperations> typeProperty() {
+    return addPropertyNameInternal('type');
   }
 }
