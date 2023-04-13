@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tagteam/Tag.dart';
-import 'package:tagteam/Title.dart';
+import 'package:tagteam/MediaCollection.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -153,6 +153,7 @@ class _AddMediaState extends State<AddMedia> {
   @override
   Widget build(BuildContext context) {
     Future<List<Tag>>? futureTags;
+
     final tagsbool =
         ModalRoute.of(context)?.settings.arguments as List<bool>? ?? [false];
     futureTags = getTags(tagsbool);
@@ -220,7 +221,16 @@ class _AddMediaState extends State<AddMedia> {
                   ButtonBar(
                     children: [
                       TextButton(
-                          onPressed: () => {runApp(MainApp())},
+                          onPressed: () => {
+                                addMedia(
+                                    controllerTitle.text,
+                                    controllerType.text,
+                                    controllerLength.text,
+                                    controllerParts.text,
+                                    controllerNotes.text,
+                                    tagsbool),
+                                //runApp(MainApp())
+                              },
                           child: Text('Accept')),
                       TextButton(
                         onPressed: () => {
@@ -229,6 +239,7 @@ class _AddMediaState extends State<AddMedia> {
                           debugPrint(controllerLength.text),
                           debugPrint(controllerParts.text),
                           debugPrint(controllerNotes.text),
+                          runApp(MainApp()),
                         },
                         child: Text('Cancel'),
                       ),
@@ -237,6 +248,37 @@ class _AddMediaState extends State<AddMedia> {
                 ],
               ),
             )))));
+  }
+
+  void addMedia(String title, String Type, String Length, String Parts,
+      String Notes, List<bool> tags) async {
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
+    List<Tag> alltags = await isar.tags.where().findAll();
+
+    List<MediaCollection> newcoll;
+    final newMedia = MediaCollection()
+      ..titleText = title
+      ..type = Type
+      ..length = Length
+      ..parts = int.parse(Parts)
+      ..notes = Notes;
+    await isar.writeTxn((isar) => isar.mediaCollections.put(newMedia));
+    if (tags.contains(true)) {
+      for (int i = 0; i < tags.length; i++) {
+        if (tags[i]) {
+          debugPrint("inside if i");
+          newMedia.tag.add(alltags[i]);
+          debugPrint("tag");
+          debugPrint(alltags[i].tagText);
+          await isar.writeTxn((isar) async {
+            await newMedia.tag.save();
+          });
+        }
+      }
+    }
+
+    print(newMedia.tag);
+    isar.close();
   }
 
   Future<List<Tag>> getTags(List<bool> _checked) async {
@@ -523,7 +565,7 @@ class _EditTagsState extends State<EditTags> {
   }
 
   void addTag(String tag) async {
-    final isar = await Isar.open(schemas: [TitleSchema, TagSchema]);
+    final isar = await Isar.open(schemas: [TagSchema]);
     final newTag = Tag()..tagText = tag;
     await isar.writeTxn((isar) => isar.tags.put(newTag));
     isar.close();
