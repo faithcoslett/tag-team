@@ -139,6 +139,7 @@ class _AddMediaState extends State<AddMedia> {
   final controllerLength = TextEditingController();
   final controllerParts = TextEditingController();
   final controllerNotes = TextEditingController();
+
   @override
   void dispose() {
     controllerTitle.dispose();
@@ -151,6 +152,16 @@ class _AddMediaState extends State<AddMedia> {
 
   @override
   Widget build(BuildContext context) {
+    Future<List<Tag>>? futureTags;
+    final tagsbool =
+        ModalRoute.of(context)?.settings.arguments as List<bool>? ?? [false];
+    futureTags = getTags(tagsbool);
+    if (tagsbool.length == 1 && tagsbool[0] == false) {
+      debugPrint("only False");
+    } else {
+      debugPrint("Greater 1 or true");
+      futureTags = getTags(tagsbool);
+    }
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(title: Text('Add Media')),
@@ -183,8 +194,29 @@ class _AddMediaState extends State<AddMedia> {
                     ElevatedButton(
                         onPressed: () => {runApp(EditTags())},
                         child: Text('Edit Tags')),
-                    Text('tags'),
                   ]),
+                  Expanded(
+                    child: FutureBuilder<List<Tag>>(
+                        future: futureTags,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Tag>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            List<Tag> tags = snapshot.data!;
+                            return ListView.builder(
+                                itemCount: tags.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(tags[index].tagText ?? ""),
+                                  );
+                                });
+                          }
+                        }),
+                  ),
                   ButtonBar(
                     children: [
                       TextButton(
@@ -205,6 +237,23 @@ class _AddMediaState extends State<AddMedia> {
                 ],
               ),
             )))));
+  }
+
+  Future<List<Tag>> getTags(List<bool> _checked) async {
+    final isar = await Isar.open(schemas: [TagSchema]);
+    List<Tag> tags = await isar.tags.where().findAll();
+    isar.close();
+    if (_checked.contains(true)) {
+      List<Tag> selectedTags = [];
+      for (int i = 0; i < _checked.length; i++) {
+        if (_checked[i]) {
+          selectedTags.add(tags[i]);
+        }
+      }
+      return selectedTags;
+    } else {
+      return [];
+    }
   }
 }
 
@@ -451,7 +500,14 @@ class _EditTagsState extends State<EditTags> {
                           child: Text('Cancel'),
                         ),
                         TextButton(
-                          onPressed: () => {runApp(MainApp())},
+                          onPressed: () => {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const AddMedia(),
+                                    settings:
+                                        RouteSettings(arguments: _checked)))
+                          },
                           child: Text('Submit'),
                         ),
                       ],
