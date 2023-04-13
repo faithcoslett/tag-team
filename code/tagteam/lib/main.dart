@@ -13,7 +13,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //doesnt work on web vvvvvvvvvvvv
   //final dir = await getApplicationSupportDirectory();
-  final isar = await Isar.open(schemas: [TitleSchema, TagSchema]);
+  //final isar = await Isar.open(schemas: [TitleSchema, TagSchema]);
   runApp(const MainApp());
 }
 
@@ -232,8 +232,7 @@ class _EditMediaState extends State<EditMedia> {
                   ),
                   Row(children: [
                     ElevatedButton(
-                        onPressed: () => {runApp(EditTags())},
-                        child: Text('Edit Tags')),
+                        onPressed: () => {}, child: Text('Edit Tags')),
                     Text('tags'),
                   ]),
                   ButtonBar(
@@ -358,6 +357,14 @@ class EditTags extends StatefulWidget {
 class _EditTagsState extends State<EditTags> {
   @override
   Widget build(BuildContext context) {
+    final controllerTag = TextEditingController();
+
+    @override
+    void dispose() {
+      controllerTag.dispose();
+      super.dispose();
+    }
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: Text('Edit Tags')),
@@ -367,7 +374,11 @@ class _EditTagsState extends State<EditTags> {
             children: [
               TextFormField(
                 decoration: InputDecoration(labelText: 'New Tags'),
+                controller: controllerTag,
               ),
+              ElevatedButton(
+                  onPressed: () => {addTag(controllerTag.text)},
+                  child: Text('Submit Tag')),
               Row(children: [
                 Text('Tags:'),
                 SingleChildScrollView(
@@ -402,5 +413,12 @@ class _EditTagsState extends State<EditTags> {
         )),
       ),
     );
+  }
+
+  void addTag(String tag) async {
+    final isar = await Isar.open(schemas: [TitleSchema, TagSchema]);
+    final newTag = Tag()..tagText = tag;
+    await isar.writeTxn((isar) => isar.tags.put(newTag));
+    isar.close();
   }
 }
