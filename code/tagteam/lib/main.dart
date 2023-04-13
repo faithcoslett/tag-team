@@ -123,7 +123,7 @@ class MediaTable extends StatelessWidget {
                               ),
                               TableCell(
                                   child: IconButton(
-                                onPressed: () {},
+                                onPressed: () => {runApp(EditMedia())},
                                 icon: const Icon(Icons.edit),
                               ))
                             ]),
