@@ -9,7 +9,7 @@
 ### 2. Tasks Completed: What was done during the last 3 weeks (by whom)
 
 #### A. Description of tasks completed
-Joshua and Charles pivoted to find a new database package after all SQL ones turned out to be incompatible with web app functionality. They also collaborated to implement and push the initial database code, and shared resources with the team so everyone understood the new database package. Ally helped all other members understand the frontend code. Faith cleaned up the database design, and created the first draft of the Undergraduate Research Day presentation slides and the product demo video. Charles, Joshua, and Faith pushed backend code that integrated the database and frontend. The entire group also met with Ward to practice the presentation.
+Joshua and Charles pivoted to find a new database package after all SQL ones turned out to be incompatible with web app functionality. They also collaborated to implement and push the initial database code, and shared resources with the team so everyone understood the new database package. Ally helped all other members understand the frontend code. Faith cleaned up the database code, and created the first draft of the Undergraduate Research Day presentation slides and the product demo video. Charles, Joshua, and Faith pushed backend code that integrated the database and frontend. The entire group also added to the presentation slides and met with Ward to practice.
 
 #### B. Your choice of quantifiable metric(s)
 The number of tangible things we have created, which includes database code, backend code, integration code, presentation slides, and a demo video.
