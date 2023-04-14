@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tagteam/Tag.dart';
 import 'package:tagteam/MediaCollection.dart';
 
+int editID = 0;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //doesnt work on web vvvvvvvvvvvv
@@ -123,7 +124,12 @@ class MediaTable extends StatelessWidget {
                               ),
                               TableCell(
                                   child: IconButton(
-                                onPressed: () => {runApp(EditMedia())},
+                                onPressed: () => {
+                                  editID = mediaColl.id,
+                                  print("mediaID:"),
+                                  print(mediaColl.id),
+                                  runApp(EditMedia())
+                                },
                                 icon: const Icon(Icons.edit),
                               ))
                             ]),
@@ -335,8 +341,36 @@ class EditMedia extends StatefulWidget {
 }
 
 class _EditMediaState extends State<EditMedia> {
+  final controllerTitle = TextEditingController();
+  final controllerType = TextEditingController();
+  final controllerLength = TextEditingController();
+  final controllerParts = TextEditingController();
+  final controllerNotes = TextEditingController();
+
+  @override
+  void dispose() {
+    controllerTitle.dispose();
+    controllerType.dispose();
+    controllerLength.dispose();
+    controllerParts.dispose();
+    controllerNotes.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("Edit ID");
+    print(editID);
+    Future<List<Tag>>? futureTags;
+    final tagsbool =
+        ModalRoute.of(context)?.settings.arguments as List<bool>? ?? [false];
+    futureTags = getTags(tagsbool);
+    if (tagsbool.length == 1 && tagsbool[0] == false) {
+      debugPrint("only False");
+    } else {
+      debugPrint("Greater 1 or true");
+      futureTags = getTags(tagsbool);
+    }
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(title: Text('Edit Media')),
@@ -347,24 +381,51 @@ class _EditMediaState extends State<EditMedia> {
                 children: [
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Title'),
+                    controller: controllerTitle,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Type'),
+                    controller: controllerType,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Length'),
+                    controller: controllerLength,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Parts'),
+                    controller: controllerParts,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Notes'),
+                    controller: controllerNotes,
                   ),
                   Row(children: [
                     ElevatedButton(
-                        onPressed: () => {}, child: Text('Edit Tags')),
-                    Text('tags'),
+                        onPressed: () => {runApp(EditTags())},
+                        child: Text('Edit Tags')),
                   ]),
+                  Expanded(
+                    child: FutureBuilder<List<Tag>>(
+                        future: futureTags,
+                        builder: (BuildContext context,
+                            AsyncSnapshot<List<Tag>> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else {
+                            List<Tag> tags = snapshot.data!;
+                            return ListView.builder(
+                                itemCount: tags.length,
+                                itemBuilder: (context, index) {
+                                  return ListTile(
+                                    title: Text(tags[index].tagText ?? ""),
+                                  );
+                                });
+                          }
+                        }),
+                  ),
                   ButtonBar(
                     children: [
                       TextButton(
@@ -374,13 +435,114 @@ class _EditMediaState extends State<EditMedia> {
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Delete')),
                       TextButton(
-                          onPressed: () => {runApp(MainApp())},
+                          onPressed: () => {
+                                upDateMedia(
+                                    controllerTitle.text,
+                                    controllerType.text,
+                                    controllerLength.text,
+                                    controllerParts.text,
+                                    controllerNotes.text,
+                                    editID,
+                                    tagsbool),
+                                runApp(MainApp())
+                              },
                           child: Text('Submit')),
                     ],
-                  )
+                  ),
                 ],
               ),
             )))));
+  }
+
+  void upDateMedia(String title, String Type, String Length, String Parts,
+      String Notes, int ID, List<bool> tags) async {
+    print("tag list");
+    for (int i = 0; i < tags.length; i++) {
+      print(tags[i]);
+    }
+    print("updateMedia!");
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
+    List<Tag> alltags = await isar.tags.where().findAll();
+    final upDateMedia = await isar.mediaCollections.get(ID);
+    await upDateMedia!.tag.load();
+    debugPrint("Tag! before clear");
+    for (Tag ta in upDateMedia.tag) {
+      print("TAGB!!");
+      print(ta.tagText);
+    }
+    upDateMedia.tag.clear();
+
+    await isar.writeTxn((isar) async {
+      await upDateMedia.tag.save();
+    });
+    debugPrint("Tag! after clear");
+    for (Tag ta in upDateMedia.tag) {
+      print("TAGA!!");
+      print(ta.tagText);
+    }
+    /*
+    debugPrint("Tag! before clear");
+    for (Tag ta in upDateMedia.tag) {
+      print(ta.tagText);
+    }
+    */
+    upDateMedia.id = ID;
+    upDateMedia.titleText = title;
+    upDateMedia.type = Type;
+    upDateMedia.length = Length;
+    upDateMedia.parts = int.parse(Parts);
+    upDateMedia.notes = Notes;
+
+    await isar.writeTxn((isar) => isar.mediaCollections.put(upDateMedia));
+
+    /*
+    debugPrint("Tag! after clear");
+    for (Tag ta in upDateMedia.tag) {
+      print("TAG!!");
+      print(ta.tagText);
+    }
+    */
+    if (tags.contains(true)) {
+      for (int i = 0; i < tags.length; i++) {
+        if (tags[i]) {
+          //debugPrint("inside if i");
+          upDateMedia.tag.add(alltags[i]);
+          //debugPrint("tag");
+          //debugPrint(alltags[i].tagText);
+          await isar.writeTxn((isar) async {
+            await upDateMedia.tag.save();
+          });
+        }
+      }
+    }
+    //debugPrint("Tag!");
+    //for (Tag ta in upDateMedia.tag) {
+    //  print(ta.tagText);
+    //}
+    //print(newMedia.tag.last.tagText);
+    await isar.close();
+    editID = 0;
+    //print("end of update editID:");
+    //print(editID);
+    return;
+  }
+
+  Future<List<Tag>> getTags(List<bool> _checked) async {
+    final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
+    List<Tag> tags = await isar.tags.where().findAll();
+
+    isar.close();
+    if (_checked.contains(true)) {
+      List<Tag> selectedTags = [];
+      for (int i = 0; i < _checked.length; i++) {
+        if (_checked[i]) {
+          selectedTags.add(tags[i]);
+        }
+      }
+      return selectedTags;
+    } else {
+      return [];
+    }
   }
 }
 
@@ -572,12 +734,24 @@ class _EditTagsState extends State<EditTags> {
                         ),
                         TextButton(
                           onPressed: () => {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const AddMedia(),
-                                    settings:
-                                        RouteSettings(arguments: _checked)))
+                            if (editID == 0)
+                              {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const AddMedia(),
+                                        settings:
+                                            RouteSettings(arguments: _checked)))
+                              }
+                            else
+                              {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const EditMedia(),
+                                        settings:
+                                            RouteSettings(arguments: _checked)))
+                              }
                           },
                           child: Text('Submit'),
                         ),
