@@ -8,13 +8,16 @@ import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tagteam/Tag.dart';
 import 'package:tagteam/MediaCollection.dart';
+import 'package:tagteam/DBhelper.dart';
 
 int editID = 0;
+DBhelper dbhelp = DBhelper();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //doesnt work on web vvvvvvvvvvvv
   //final dir = await getApplicationSupportDirectory();
   //final isar = await Isar.open(schemas: [TitleSchema, TagSchema]);
+  await dbhelp.openDB();
   runApp(const MainApp());
 }
 
@@ -46,101 +49,106 @@ class _MainAppState extends State<MainApp> {
 
 class MediaTable extends StatelessWidget {
   const MediaTable({super.key});
+  Future<List<MediaCollection>> _futureMedia() async {
+    List<MediaCollection> medias = await dbhelp.getMediaCollection();
+    //List<Tag> tags = await getTags();
+    return Future.value(medias);
+  }
+
   @override
   Widget build(BuildContext context) {
-    Future<List<MediaCollection>> mediaFuture = getMediaCollections();
+    dbhelp.t = false;
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Media List'),
-            actions: [
-              ButtonBar(
-                children: [
-                  IconButton(
-                      onPressed: () => {runApp(Filter())},
-                      icon: Icon(Icons.filter_alt)),
-                  IconButton(
-                      onPressed: () => {runApp(AddMedia())},
-                      icon: Icon(Icons.add_circle)),
-                ],
-              )
-            ],
-          ),
-          body: SingleChildScrollView(
-            child: Container(
-              alignment: Alignment.topCenter,
-              child: FutureBuilder<List<MediaCollection>>(
-                  future: mediaFuture,
-                  builder:
-                      (context, AsyncSnapshot<List<MediaCollection>> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
-                    } else {
-                      List<MediaCollection> mediaCollections = snapshot.data!;
-                      debugPrint("Inside Main!");
-                      for (final mc in mediaCollections) {
-                        print("printing MC!");
-                        //print(mc.tag.last.tagText);
-                        for (Tag tt in mc.tag) {
-                          print("printing!");
-                          print(tt.tagText);
-                        }
-                      }
-                      //debugPrint(tags.length.toString());
-                      return Table(
-                        border: TableBorder.all(),
-                        children: [
-                          TableRow(children: [
-                            TableCell(child: const Text('Title')),
-                            TableCell(child: const Text('Type')),
-                            TableCell(child: const Text('Length')),
-                            TableCell(child: const Text('Parts')),
-                            TableCell(child: const Text('Notes')),
-                            TableCell(child: const Text('Tags')),
-                            TableCell(child: const Text('Edit')),
-                          ]),
-                          for (final mediaColl in mediaCollections)
-                            TableRow(children: [
-                              TableCell(
-                                  child: Text(mediaColl.titleText.toString())),
-                              TableCell(child: Text(mediaColl.type.toString())),
-                              TableCell(
-                                  child: Text(mediaColl.length.toString())),
-                              TableCell(
-                                  child: Text(mediaColl.parts.toString())),
-                              TableCell(
-                                  child: Text(mediaColl.notes.toString())),
-                              TableCell(
-                                //child:
-                                //Text(mediaColl.tag.last.tagText.toString()),
-                                child: Wrap(
-                                  children: [
-                                    for (Tag t in mediaColl.tag)
-                                      Chip(
-                                        label: Text(t.tagText.toString()),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                              TableCell(
-                                  child: IconButton(
-                                onPressed: () => {
-                                  editID = mediaColl.id,
-                                  print("mediaID:"),
-                                  print(mediaColl.id),
-                                  runApp(EditMedia())
-                                },
-                                icon: const Icon(Icons.edit),
-                              ))
-                            ]),
-                        ],
-                      );
-                    }
-                  }),
+        appBar: AppBar(
+          title: const Text('Media List'),
+          actions: [
+            ButtonBar(
+              children: [
+                IconButton(
+                  onPressed: () => {runApp(Filter())},
+                  icon: Icon(Icons.filter_alt),
+                ),
+                IconButton(
+                  onPressed: () => {runApp(AddMedia())},
+                  icon: Icon(Icons.add_circle),
+                ),
+              ],
             ),
-          )
-          //),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Container(
+            alignment: Alignment.topCenter,
+            child: FutureBuilder<List<MediaCollection>>(
+              future: _futureMedia(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<List<MediaCollection>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting &&
+                    snapshot.data != null) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  print("error");
+                  return Text('Error ${snapshot.error}');
+                } else if (snapshot.hasData) {
+                  final mediaColls = snapshot.data!;
+
+                  final rows = mediaColls.map((mediaColl) {
+                    return TableRow(children: [
+                      TableCell(child: Text(mediaColl.titleText.toString())),
+                      TableCell(child: Text(mediaColl.type.toString())),
+                      TableCell(child: Text(mediaColl.length.toString())),
+                      TableCell(child: Text(mediaColl.parts.toString())),
+                      TableCell(child: Text(mediaColl.notes.toString())),
+                      TableCell(
+                        child: Wrap(
+                          children: [
+                            for (Tag t in mediaColl.tag)
+                              Chip(
+                                label: Text(t.tagText.toString()),
+                              ),
+                          ],
+                        ),
+                      ),
+                      TableCell(
+                        child: IconButton(
+                          onPressed: () => {
+                            //editID = mediaColl.id,
+                            dbhelp.curId = mediaColl.id,
+                            print("mediaID:"),
+                            print(mediaColl.id),
+                            runApp(EditMedia()),
+                          },
+                          icon: const Icon(Icons.edit),
+                        ),
+                      ),
+                    ]);
+                  }).toList();
+                  return Table(
+                    border: TableBorder.all(),
+                    children: [
+                      TableRow(children: [
+                        TableCell(child: const Text('Title')),
+                        TableCell(child: const Text('Type')),
+                        TableCell(child: const Text('Length')),
+                        TableCell(child: const Text('Parts')),
+                        TableCell(child: const Text('Notes')),
+                        TableCell(child: const Text('Tags')),
+                        TableCell(child: const Text('Edit')),
+                      ]),
+                      ...rows,
+                    ],
+                  );
+                } else {
+                  return Container();
+                }
+              },
+            ),
           ),
+        ),
+      ),
     );
   }
 
@@ -181,19 +189,30 @@ class _AddMediaState extends State<AddMedia> {
     super.dispose();
   }
 
+  Future<List<Tag>> _futureTags() async {
+    List<Tag> tags = await dbhelp.getTags();
+    //List<Tag> tags = await getTags();
+    return Future.value(tags);
+  }
+
   @override
   Widget build(BuildContext context) {
+    dbhelp.t = true;
+    /*
     Future<List<Tag>>? futureTags;
-
+    if (dbhelp.tagBool.contains(true)) {
+      dbhelp.t = true;
+    }
     final tagsbool =
         ModalRoute.of(context)?.settings.arguments as List<bool>? ?? [false];
-    futureTags = getTags(tagsbool);
+    futureTags = dbhelp.getTags();
     if (tagsbool.length == 1 && tagsbool[0] == false) {
       debugPrint("only False");
     } else {
       debugPrint("Greater 1 or true");
       futureTags = getTags(tagsbool);
     }
+    */
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(title: Text('Add Media')),
@@ -229,7 +248,7 @@ class _AddMediaState extends State<AddMedia> {
                   ]),
                   Expanded(
                     child: FutureBuilder<List<Tag>>(
-                        future: futureTags,
+                        future: _futureTags(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<Tag>> snapshot) {
                           if (snapshot.connectionState ==
@@ -252,7 +271,17 @@ class _AddMediaState extends State<AddMedia> {
                   ButtonBar(
                     children: [
                       TextButton(
-                          onPressed: () => {
+                          onPressed: () async => {
+                                dbhelp.curTitle = controllerTitle.text,
+                                dbhelp.curType = controllerType.text,
+                                dbhelp.curLeng = controllerLength.text,
+                                dbhelp.curParts = controllerParts.text,
+                                dbhelp.curNotes = controllerNotes.text,
+                                await dbhelp.addMedia(),
+                                dbhelp.tagBool =
+                                    List.filled(dbhelp.tagBool.length, false),
+
+                                /*
                                 addMedia(
                                     controllerTitle.text,
                                     controllerType.text,
@@ -260,6 +289,7 @@ class _AddMediaState extends State<AddMedia> {
                                     controllerParts.text,
                                     controllerNotes.text,
                                     tagsbool),
+                                    */
                                 runApp(MainApp())
                               },
                           child: Text('Accept')),
@@ -281,6 +311,7 @@ class _AddMediaState extends State<AddMedia> {
             )))));
   }
 
+/*
   void addMedia(String title, String Type, String Length, String Parts,
       String Notes, List<bool> tags) async {
     final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
@@ -314,7 +345,7 @@ class _AddMediaState extends State<AddMedia> {
     await isar.close();
     return;
   }
-
+*/
   Future<List<Tag>> getTags(List<bool> _checked) async {
     final isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     List<Tag> tags = await isar.tags.where().findAll();
@@ -358,19 +389,49 @@ class _EditMediaState extends State<EditMedia> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _futureMedia().then((media) {
+      setState(() {
+        controllerTitle.text = media.titleText ?? "";
+        controllerType.text = media.type ?? "";
+        controllerLength.text = media.length ?? "";
+        controllerParts.text = media.parts.toString();
+        controllerNotes.text = media.notes ?? "";
+      });
+    });
+  }
+
+  Future<MediaCollection> _futureMedia() async {
+    final media = await dbhelp.getSingleMediaCollection();
+    //List<Tag> tags = await getTags();
+    return Future.value(media);
+  }
+
+  Future<List<Tag>> _futureTags() async {
+    final tags = await dbhelp.getTags();
+    //List<Tag> tags = await getTags();
+    return Future.value(tags);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    print("Edit ID");
-    print(editID);
-    Future<List<Tag>>? futureTags;
-    final tagsbool =
-        ModalRoute.of(context)?.settings.arguments as List<bool>? ?? [false];
-    futureTags = getTags(tagsbool);
+    dbhelp.t = true;
+    //print("Edit ID");
+    //print(editID);
+    //Future<List<MediaCollection>>? futureMedia;
+    //Future<List<Tag>>? futureTags;
+    //final tagsbool =
+    //    ModalRoute.of(context)?.settings.arguments as List<bool>? ?? [false];
+    //futureTags = getTags(tagsbool);
+    /*
     if (tagsbool.length == 1 && tagsbool[0] == false) {
       debugPrint("only False");
     } else {
       debugPrint("Greater 1 or true");
       futureTags = getTags(tagsbool);
     }
+    */
     return MaterialApp(
         home: Scaffold(
             appBar: AppBar(title: Text('Edit Media')),
@@ -379,24 +440,83 @@ class _EditMediaState extends State<EditMedia> {
                     child: Form(
               child: Column(
                 children: [
+                  /*
+                  Expanded(
+                      child: FutureBuilder<MediaCollection>(
+                    future: _futureMedia(),
+                    builder: (BuildContext context1,
+                        AsyncSnapshot<MediaCollection> snapshot1) {
+                      if (snapshot1.connectionState ==
+                          ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot1.hasData) {
+                        MediaCollection med = snapshot1.data!;
+                        print("titlet");
+                        print(med.notes);
+                        return Container(
+                          child: Row(
+                            children: [
+                              TextFormField(
+                                decoration: InputDecoration(labelText: 'Title'),
+                                //initialValue: med.titleText,
+                                controller: controllerTitle,
+                              ),
+                              TextFormField(
+                                decoration: InputDecoration(labelText: 'Type'),
+                                //initialValue: med.type,
+                                controller: controllerType,
+                              ),
+                              TextFormField(
+                                decoration:
+                                    InputDecoration(labelText: 'Length'),
+                                //initialValue: med.length,
+                                controller: controllerLength,
+                              ),
+                              TextFormField(
+                                decoration: InputDecoration(labelText: 'Parts'),
+                                //initialValue: med.parts.toString(),
+                                controller: controllerParts,
+                              ),
+                              TextFormField(
+                                decoration: InputDecoration(labelText: 'Notes'),
+                                //initialValue: med.notes,
+                                controller: controllerNotes,
+                              ),
+                            ],
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  )),
+                  */
+
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Title'),
+                    //initialValue: dbhelp.curTitle,
                     controller: controllerTitle,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Type'),
+                    // initialValue: dbhelp.curType,
                     controller: controllerType,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Length'),
+                    //initialValue: dbhelp.curLeng,
                     controller: controllerLength,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Parts'),
+                    //initialValue: dbhelp.curParts,
                     controller: controllerParts,
                   ),
                   TextFormField(
                     decoration: InputDecoration(labelText: 'Notes'),
+                    //initialValue: dbhelp.curNotes,
                     controller: controllerNotes,
                   ),
                   Row(children: [
@@ -406,11 +526,12 @@ class _EditMediaState extends State<EditMedia> {
                   ]),
                   Expanded(
                     child: FutureBuilder<List<Tag>>(
-                        future: futureTags,
+                        future: _futureTags(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<Tag>> snapshot) {
                           if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
+                                  ConnectionState.waiting ||
+                              snapshot.hasData == false) {
                             return Center(
                               child: CircularProgressIndicator(),
                             );
@@ -432,10 +553,24 @@ class _EditMediaState extends State<EditMedia> {
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Cancel')),
                       TextButton(
-                          onPressed: () => {runApp(MainApp())},
+                          onPressed: () async => {
+                                await dbhelp.deleteColl(),
+                                dbhelp.tagBool =
+                                    List.filled(dbhelp.tagBool.length, false),
+                                runApp(MainApp())
+                              },
                           child: Text('Delete')),
                       TextButton(
-                          onPressed: () => {
+                          onPressed: () async => {
+                                dbhelp.curTitle = controllerTitle.text,
+                                dbhelp.curType = controllerType.text,
+                                dbhelp.curLeng = controllerLength.text,
+                                dbhelp.curParts = controllerParts.text,
+                                dbhelp.curNotes = controllerNotes.text,
+                                await dbhelp.upDateMediaCollection(),
+                                dbhelp.tagBool =
+                                    List.filled(dbhelp.tagBool.length, false),
+                                /*
                                 upDateMedia(
                                     controllerTitle.text,
                                     controllerType.text,
@@ -444,6 +579,7 @@ class _EditMediaState extends State<EditMedia> {
                                     controllerNotes.text,
                                     editID,
                                     tagsbool),
+                                    */
                                 runApp(MainApp())
                               },
                           child: Text('Submit')),
@@ -471,10 +607,13 @@ class _EditMediaState extends State<EditMedia> {
       print(ta.tagText);
     }
     upDateMedia.tag.clear();
-
     await isar.writeTxn((isar) async {
       await upDateMedia.tag.save();
     });
+    //upDateMedia[].tag = [];
+    //for (final t in upDateMedia.tag) {
+    //  await upDateMedia.tag.remove(t);
+    //}
     debugPrint("Tag! after clear");
     for (Tag ta in upDateMedia.tag) {
       print("TAGA!!");
@@ -494,7 +633,9 @@ class _EditMediaState extends State<EditMedia> {
     upDateMedia.notes = Notes;
 
     await isar.writeTxn((isar) => isar.mediaCollections.put(upDateMedia));
-
+    //await isar.writeTxn((isar) async {
+    //  await upDateMedia.tag.save();
+    //});
     /*
     debugPrint("Tag! after clear");
     for (Tag ta in upDateMedia.tag) {
@@ -502,6 +643,7 @@ class _EditMediaState extends State<EditMedia> {
       print(ta.tagText);
     }
     */
+
     if (tags.contains(true)) {
       for (int i = 0; i < tags.length; i++) {
         if (tags[i]) {
@@ -515,13 +657,19 @@ class _EditMediaState extends State<EditMedia> {
         }
       }
     }
+
     //debugPrint("Tag!");
     //for (Tag ta in upDateMedia.tag) {
     //  print(ta.tagText);
     //}
     //print(newMedia.tag.last.tagText);
-    await isar.close();
+    debugPrint("Tag! at end");
+    for (Tag ta in upDateMedia.tag) {
+      print("TAGC!!");
+      print(ta.tagText);
+    }
     editID = 0;
+    await isar.close();
     //print("end of update editID:");
     //print(editID);
     return;
@@ -647,12 +795,27 @@ class EditTags extends StatefulWidget {
 }
 
 class _EditTagsState extends State<EditTags> {
+  Future<List<Tag>> _futureTags() async {
+    List<Tag> tags = await dbhelp.getTags();
+    //List<Tag> tags = await getTags();
+    return Future.value(tags);
+  }
+
   @override
   Widget build(BuildContext context) {
+    dbhelp.t = false;
     final controllerTag = TextEditingController();
     List<String> items = ['Item 1', 'Item 2', 'Item 3', 'Item 4', 'Item 5'];
-    Future<List<Tag>> tagsFuture = getTags();
+    //Future<List<Tag>> tagsFuture = getTags();
     List<bool> _checked = [];
+    int numTag = 0;
+    //Future<List<Tag>> tagsFuture = dbhelp.getTags();
+
+    print("second tag len");
+    print(dbhelp.tagCol.length);
+    if (dbhelp.tagCol.isNotEmpty) {
+      numTag = dbhelp.tagCol.length;
+    }
     @override
     void dispose() {
       controllerTag.dispose();
@@ -673,55 +836,86 @@ class _EditTagsState extends State<EditTags> {
                       controller: controllerTag,
                     ),
                     ElevatedButton(
-                      onPressed: () =>
-                          {addTag(controllerTag.text), runApp(EditTags())},
+                      onPressed: () => {
+                        //addTag(controllerTag.text), \
+                        if (controllerTag.text.isNotEmpty)
+                          {
+                            dbhelp.curTag = controllerTag.text,
+                            dbhelp.addTag(),
+                            //addTag(controllerTag.text),
+                          },
+                        runApp(EditTags())
+                      },
                       child: Text('Submit Tag'),
                     ),
                     Expanded(
                       child: FutureBuilder<List<Tag>>(
-                        future: tagsFuture,
+                        future: _futureTags(),
                         builder: (BuildContext context,
                             AsyncSnapshot<List<Tag>> snapshot) {
                           if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
+                                  ConnectionState.waiting &&
+                              snapshot.data != null) {
                             return Center(
                               child: CircularProgressIndicator(),
                             );
-                          } else {
+                          } else if (snapshot.hasError) {
+                            print("error");
+                            return Text('Error ${snapshot.error}');
+                          } else if (snapshot.hasData) {
                             List<Tag> tags = snapshot.data!;
                             debugPrint("here2!");
                             debugPrint("Tags List2!");
                             debugPrint(tags.length.toString());
                             debugPrint("Checked Length2!");
                             debugPrint(_checked.length.toString());
-                            if (_checked.length < tags.length) {
-                              _checked = List.filled(tags.length, false);
-                              debugPrint("here!");
-                              debugPrint("Tags List!");
-                              debugPrint(tags.length.toString());
-                              debugPrint("Checked Length!");
-                              debugPrint(_checked.length.toString());
+                            //if (_checked.length < tags.length) {
+                            //  _checked = List.filled(tags.length, false);
+                            //  debugPrint("here!");
+                            //  debugPrint("Tags List!");
+                            //  debugPrint(tags.length.toString());
+                            //  debugPrint("Checked Length!");
+                            //  debugPrint(_checked.length.toString());
+                            // }
+                            if (dbhelp.tagBool.length < tags.length) {
+                              dbhelp.tagBool = List.filled(tags.length, false);
                             }
                             return ListView.builder(
                               itemCount: tags.length,
                               itemBuilder: (context, index) {
                                 return CheckboxListTile(
                                   title: Text(tags[index].tagText ?? ""),
-                                  value: _checked[index],
+                                  //value: _checked[index],
+                                  value: dbhelp.tagBool[index],
                                   onChanged: (bool? value) {
                                     setState(() {
+                                      /*
                                       if (_checked[index] == false) {
                                         _checked[index] = true;
+
                                         debugPrint(_checked[index].toString());
                                       } else {
                                         _checked[index] = false;
                                         debugPrint(_checked[index].toString());
+                                      }
+                                      */
+                                      if (dbhelp.tagBool[index] == false) {
+                                        dbhelp.tagBool[index] = true;
+
+                                        debugPrint(
+                                            dbhelp.tagBool[index].toString());
+                                      } else {
+                                        dbhelp.tagBool[index] = false;
+                                        debugPrint(
+                                            dbhelp.tagBool[index].toString());
                                       }
                                     });
                                   },
                                 );
                               },
                             );
+                          } else {
+                            return Text('Other issue');
                           }
                         },
                       ),
@@ -734,7 +928,7 @@ class _EditTagsState extends State<EditTags> {
                         ),
                         TextButton(
                           onPressed: () => {
-                            if (editID == 0)
+                            if (dbhelp.curId == -1)
                               {
                                 Navigator.push(
                                     context,
