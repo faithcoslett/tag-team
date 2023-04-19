@@ -20,4 +20,5 @@ class MediaCollection {
   String? notes; // open space for user to leave any note on the entry
   // vvvvv because of this we will have to do linkproperty.load and linkproperty.save later on because they are lazy >:(
   final tag = IsarLinks<Tag>();
+  //IsarLinks<Tag>? tag;
 }
