@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tagteam/Tag.dart';
 import 'package:tagteam/MediaCollection.dart';
 
+const mainColor=Colors.indigo;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //doesnt work on web vvvvvvvvvvvv
@@ -28,6 +30,17 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: mainColor, onPrimary: Colors.white,
+            secondary: mainColor, onSecondary: Colors.white,
+            error: Colors.red, onError: Colors.black,
+            background: Colors.grey, onBackground: Colors.black,
+            surface: mainColor, onSurface: Colors.white
+          )
+        ),
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Homepage'),
@@ -49,6 +62,17 @@ class MediaTable extends StatelessWidget {
   Widget build(BuildContext context) {
     Future<List<MediaCollection>> mediaFuture = getMediaCollections();
     return MaterialApp(
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: mainColor, onPrimary: Colors.white,
+            secondary: mainColor, onSecondary: Colors.white,
+            error: Colors.red, onError: Colors.black,
+            background: Colors.grey, onBackground: Colors.black,
+            surface: mainColor, onSurface: Colors.white
+          )
+        ),
       home: Scaffold(
           appBar: AppBar(
             title: const Text('Media List'),
@@ -189,6 +213,17 @@ class _AddMediaState extends State<AddMedia> {
       futureTags = getTags(tagsbool);
     }
     return MaterialApp(
+        theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: mainColor, onPrimary: Colors.white,
+            secondary: mainColor, onSecondary: Colors.white,
+            error: Colors.red, onError: Colors.black,
+            background: Colors.grey, onBackground: Colors.black,
+            surface: mainColor, onSurface: Colors.white
+          )
+        ),
         home: Scaffold(
             appBar: AppBar(title: Text('Add Media')),
             body: Center(
@@ -245,7 +280,7 @@ class _AddMediaState extends State<AddMedia> {
                   ),
                   ButtonBar(
                     children: [
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () => {
                                 addMedia(
                                     controllerTitle.text,
@@ -257,7 +292,7 @@ class _AddMediaState extends State<AddMedia> {
                                 runApp(MainApp())
                               },
                           child: Text('Accept')),
-                      TextButton(
+                      ElevatedButton(
                         onPressed: () => {
                           debugPrint(controllerTitle.text),
                           debugPrint(controllerType.text),
@@ -338,6 +373,17 @@ class _EditMediaState extends State<EditMedia> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: mainColor, onPrimary: Colors.white,
+            secondary: mainColor, onSecondary: Colors.white,
+            error: Colors.red, onError: Colors.black,
+            background: Colors.grey, onBackground: Colors.black,
+            surface: mainColor, onSurface: Colors.white
+          )
+        ),
         home: Scaffold(
             appBar: AppBar(title: Text('Edit Media')),
             body: Center(
@@ -367,13 +413,13 @@ class _EditMediaState extends State<EditMedia> {
                   ]),
                   ButtonBar(
                     children: [
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Cancel')),
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Delete')),
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Submit')),
                     ],
@@ -394,6 +440,17 @@ class _FilterState extends State<Filter> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: mainColor, onPrimary: Colors.white,
+            secondary: mainColor, onSecondary: Colors.white,
+            error: Colors.red, onError: Colors.black,
+            background: Colors.grey, onBackground: Colors.black,
+            surface: mainColor, onSurface: Colors.white
+          )
+        ),
       home: Scaffold(
         appBar: AppBar(title: Text('Filter')),
         body: Container(
@@ -461,10 +518,10 @@ class _FilterState extends State<Filter> {
               ]),
               ButtonBar(
                 children: [
-                  TextButton(
+                  ElevatedButton(
                       onPressed: () => {runApp(MainApp())},
                       child: Text('Cancel')),
-                  TextButton(
+                  ElevatedButton(
                       onPressed: () => {runApp(MainApp())},
                       child: Text('Submit')),
                 ],
@@ -498,6 +555,17 @@ class _EditTagsState extends State<EditTags> {
     }
 
     return MaterialApp(
+      theme: ThemeData(
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme(
+            brightness: Brightness.dark,
+            primary: mainColor, onPrimary: Colors.white,
+            secondary: mainColor, onSecondary: Colors.white,
+            error: Colors.red, onError: Colors.black,
+            background: Colors.grey, onBackground: Colors.black,
+            surface: mainColor, onSurface: Colors.white
+          )
+        ),
       home: Scaffold(
         appBar: AppBar(title: Text('Edit Tags')),
         body: Container(
@@ -566,11 +634,11 @@ class _EditTagsState extends State<EditTags> {
                     ),
                     ButtonBar(
                       children: [
-                        TextButton(
+                        ElevatedButton(
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Cancel'),
                         ),
-                        TextButton(
+                        ElevatedButton(
                           onPressed: () => {
                             Navigator.push(
                                 context,
