@@ -19,6 +19,7 @@ class DBhelper {
   List<int> filterIds = [];
   List<bool> tagBool = [];
   bool t = false;
+  bool m = false;
   String curTitle = "",
       curType = "",
       curLeng = "",
@@ -83,15 +84,81 @@ class DBhelper {
       isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     }
     mediaCol.clear();
+    tagCol.clear();
     //isar = await Isar.open(schemas: [MediaCollectionSchema, TagSchema]);
     mediaCol = await isar.mediaCollections.where().findAll();
+
     print("len");
+    print(m);
+    print(curTitle);
     print(mediaCol.length);
-    for (int i = 0; i < mediaCol.length; i++) {
-      await mediaCol[i].tag.load();
+    if (tagBool.isNotEmpty && m && curTitle.isEmpty) {
+      for (int i = 0; i < mediaCol.length; i++) {
+        await mediaCol[i].tag.load();
+      }
+      print("A");
+      List<MediaCollection> selectedMedia = [];
+      tagCol = await isar.tags.where().findAll();
+      List<Tag> tags = [];
+      for (int i = 0; i < tagBool.length; i++) {
+        if (tagBool[i]) {
+          tags.add(tagCol[i]);
+        }
+      }
+      for (int i = 0; i < mediaCol.length; i++) {
+        for (int j = 0; j < tags.length; j++) {
+          for (int k = 0; k < mediaCol[i].tag.length; k++) {
+            print(tags[j].tagText);
+            if (mediaCol[i].tag.elementAt(k).tagText == tags[j].tagText) {
+              selectedMedia.add(mediaCol[i]);
+            }
+          }
+        }
+      }
+      //final selectedMedia = await isar.mediaCollections.filter();
+      //final selectedMedia = isar.mediaCollections.filter().tag((q) {
+      //  return q.tagTextEqualTo(tags[0].tagText);
+      //}).findAll();
+
+      /*
+      for (int i = 0; i < selectedMedia.length; i++) {
+        await selectedMedia[i].tag.load();
+      }
+      for (int i = 0; i < mediaCol.length; i++) {
+        for (int j = 0; j < tagBool.length; j++) {
+          if(mediaCol[i].tag.)
+        }
+      }
+      
+      for (int i = 0; i < tagBool.length; i++) {
+        if (tagBool[i]) {
+          selectedMedia.add(mediaCol[i]);
+        }
+      }
+      */
+      m = false;
+      return selectedMedia;
+    } else if (curTitle.isNotEmpty) {
+      print("B");
+      final medi = await isar.mediaCollections
+          .filter()
+          .titleTextEqualTo(curTitle)
+          .findAll();
+      for (int i = 0; i < medi.length; i++) {
+        await medi[i].tag.load();
+      }
+      curTitle = "";
+      return medi;
+    } else {
+      print("C");
+      print(m);
+      print(curTitle);
+      for (int i = 0; i < mediaCol.length; i++) {
+        await mediaCol[i].tag.load();
+      }
+      //await isar.close();
+      return mediaCol;
     }
-    //await isar.close();
-    return mediaCol;
   }
 
   Future<MediaCollection> getSingleMediaCollection() async {
@@ -192,6 +259,7 @@ class DBhelper {
         }
       }
     }
+    curTitle = "";
     //await isar.close();
   }
 

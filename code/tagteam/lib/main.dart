@@ -701,87 +701,104 @@ class Filter extends StatefulWidget {
 }
 
 class _FilterState extends State<Filter> {
+  Future<List<Tag>> _futureTags() async {
+    List<Tag> tags = await dbhelp.getTags();
+    //List<Tag> tags = await getTags();
+    return Future.value(tags);
+  }
+
+  final controllerTitle = TextEditingController();
+  @override
+  void dispose() {
+    controllerTitle.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    dbhelp.m = true;
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(title: Text('Filter')),
         body: Container(
-            child: Form(
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Title'),
-              ),
-              Row(children: [
-                Text('Type:'),
-                SingleChildScrollView(
-                  child: Column(children: [
-                    Row(
-                      children: [
-                        Checkbox(value: true, onChanged: null),
-                        Text('TV Show')
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(value: false, onChanged: null),
-                        Text('Movie')
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(value: false, onChanged: null),
-                        Text('Podcast')
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(value: false, onChanged: null),
-                        Text('Book')
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(value: false, onChanged: null),
-                        Text('Game')
-                      ],
-                    ),
-                  ]),
-                )
-              ]),
-              Row(children: [
-                Text('Tags:'),
-                SingleChildScrollView(
-                  child: Column(children: [
-                    Row(
-                      children: [
-                        Checkbox(value: true, onChanged: null),
-                        Text('Tag')
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Checkbox(value: false, onChanged: null),
-                        Text('Tag')
-                      ],
-                    ),
-                  ]),
-                )
-              ]),
-              ButtonBar(
+          child: Form(
+            child: StatefulBuilder(builder: (context, setState) {
+              return Column(
                 children: [
-                  TextButton(
-                      onPressed: () => {runApp(MainApp())},
-                      child: Text('Cancel')),
-                  TextButton(
-                      onPressed: () => {runApp(MainApp())},
-                      child: Text('Submit')),
+                  TextFormField(
+                    decoration: InputDecoration(labelText: 'Title'),
+                    controller: controllerTitle,
+                  ),
+                  Expanded(
+                    child: FutureBuilder<List<Tag>>(
+                      future: _futureTags(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Tag>> snapshot) {
+                        if (snapshot.connectionState ==
+                                ConnectionState.waiting &&
+                            snapshot.data != null) {
+                          return Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          print("error");
+                          return Text('Error ${snapshot.error}');
+                        } else if (snapshot.hasData) {
+                          List<Tag> tags = snapshot.data!;
+                          if (dbhelp.tagBool.length < tags.length) {
+                            dbhelp.tagBool = List.filled(tags.length, false);
+                          }
+                          return ListView.builder(
+                            itemCount: tags.length,
+                            itemBuilder: (context, index) {
+                              return CheckboxListTile(
+                                title: Text(tags[index].tagText ?? ""),
+                                value: dbhelp.tagBool[index],
+                                onChanged: (bool? value) {
+                                  setState(() {
+                                    if (dbhelp.tagBool[index] == false) {
+                                      dbhelp.tagBool[index] = true;
+
+                                      debugPrint(
+                                          dbhelp.tagBool[index].toString());
+                                    } else {
+                                      dbhelp.tagBool[index] = false;
+                                      debugPrint(
+                                          dbhelp.tagBool[index].toString());
+                                    }
+                                  });
+                                },
+                              );
+                            },
+                          );
+                        } else {
+                          return Text('Other issue');
+                        }
+                      },
+                    ),
+                  ),
+                  ButtonBar(
+                    children: [
+                      TextButton(
+                          onPressed: () =>
+                              {dbhelp.m = false, runApp(MainApp())},
+                          child: Text('Cancel')),
+                      TextButton(
+                          onPressed: () => {
+                                print("D"),
+                                print(dbhelp.m),
+                                dbhelp.curTitle = controllerTitle.text,
+                                print(dbhelp.curTitle),
+                                runApp(MainApp())
+                              },
+                          child: Text('Submit')),
+                    ],
+                  )
                 ],
-              )
-            ],
+              );
+            }),
           ),
-        )),
+        ),
       ),
     );
   }
