@@ -9,7 +9,14 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tagteam/Tag.dart';
 import 'package:tagteam/MediaCollection.dart';
 import 'package:tagteam/DBhelper.dart';
-const mainColor=Colors.indigo;
+const mainColor=Colors.indigo;    //Edit this to change the color of the app
+const listText=TextStyle(
+);                                  //Edit this to change the style of the media list
+const headListText=TextStyle(
+  height: 2
+);                                  //Edit this to change the style of the media list heading
+double sideMarg=20;                 //Edit this to change the side margins
+double bottMarg=20;                 //Edit this to change the bottom margin
 int editID = 0;
 DBhelper dbhelp = DBhelper();
 void main() async {
@@ -79,7 +86,7 @@ class MediaTable extends StatelessWidget {
             error: Colors.red, onError: Colors.black,
             background: Colors.grey, onBackground: Colors.black,
             surface: mainColor, onSurface: Colors.white
-          )
+          ),
         ),
       home: Scaffold(
         appBar: AppBar(
@@ -101,6 +108,9 @@ class MediaTable extends StatelessWidget {
         ),
         body: SingleChildScrollView(
           child: Container(
+            decoration: BoxDecoration(color: Colors.indigo),
+            
+            padding: EdgeInsets.only(left:sideMarg,right:sideMarg,bottom:bottMarg),
             alignment: Alignment.topCenter,
             child: FutureBuilder<List<MediaCollection>>(
               future: _futureMedia(),
@@ -118,21 +128,39 @@ class MediaTable extends StatelessWidget {
                   final mediaColls = snapshot.data!;
 
                   final rows = mediaColls.map((mediaColl) {
-                    return TableRow(children: [
-                      TableCell(child: Text(mediaColl.titleText.toString())),
-                      TableCell(child: Text(mediaColl.type.toString())),
-                      TableCell(child: Text(mediaColl.length.toString())),
-                      TableCell(child: Text(mediaColl.parts.toString())),
-                      TableCell(child: Text(mediaColl.notes.toString())),
+                    return TableRow(
+                      decoration: BoxDecoration(color: Color.fromARGB(255, 48, 48, 48)),
+                      children: [
                       TableCell(
-                        child: Wrap(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Center(child: Text(mediaColl.titleText.toString(),style:listText))
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Center(child: Text(mediaColl.type.toString(),style:listText))
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Center(child: Text(mediaColl.length.toString(),style:listText))
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Center(child: Text(mediaColl.parts.toString(),style:listText))
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Center(child: Text(mediaColl.notes.toString(),style:listText))
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Center(child: Wrap(
                           children: [
                             for (Tag t in mediaColl.tag)
                               Chip(
-                                label: Text(t.tagText.toString()),
+                                label: Text(t.tagText.toString(),style:listText),
                               ),
                           ],
-                        ),
+                        )),
                       ),
                       TableCell(
                         child: IconButton(
@@ -151,14 +179,16 @@ class MediaTable extends StatelessWidget {
                   return Table(
                     border: TableBorder.all(),
                     children: [
-                      TableRow(children: [
-                        TableCell(child: const Text('Title')),
-                        TableCell(child: const Text('Type')),
-                        TableCell(child: const Text('Length')),
-                        TableCell(child: const Text('Parts')),
-                        TableCell(child: const Text('Notes')),
-                        TableCell(child: const Text('Tags')),
-                        TableCell(child: const Text('Edit')),
+                      TableRow(
+                        decoration: BoxDecoration(color: Color.fromARGB(255, 48, 48, 48)),
+                        children: [
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Title',style:headListText))),
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Type',style:headListText))),
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Length',style:headListText))),
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Parts',style:headListText))),
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Notes',style:headListText))),
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Tags',style:headListText))),
+                        TableCell(verticalAlignment: TableCellVerticalAlignment.middle,child: Center(child: const Text('Edit',style:headListText))),
                       ]),
                       ...rows,
                     ],
@@ -278,6 +308,40 @@ class _AddMediaState extends State<AddMedia> {
                     ElevatedButton(
                         onPressed: () => {runApp(EditTags())},
                         child: Text('Edit Tags')),
+                        ElevatedButton(
+                          onPressed: () async => {
+                                dbhelp.curTitle = controllerTitle.text,
+                                dbhelp.curType = controllerType.text,
+                                dbhelp.curLeng = controllerLength.text,
+                                dbhelp.curParts = controllerParts.text,
+                                dbhelp.curNotes = controllerNotes.text,
+                                await dbhelp.addMedia(),
+                                dbhelp.tagBool =
+                                    List.filled(dbhelp.tagBool.length, false),
+
+                                /*
+                                addMedia(
+                                    controllerTitle.text,
+                                    controllerType.text,
+                                    controllerLength.text,
+                                    controllerParts.text,
+                                    controllerNotes.text,
+                                    tagsbool),
+                                    */
+                                runApp(MainApp())
+                              },
+                          child: Text('Accept')),
+                      ElevatedButton(
+                        onPressed: () => {
+                          debugPrint(controllerTitle.text),
+                          debugPrint(controllerType.text),
+                          debugPrint(controllerLength.text),
+                          debugPrint(controllerParts.text),
+                          debugPrint(controllerNotes.text),
+                          runApp(MainApp()),
+                        },
+                        child: Text('Cancel'),
+                      ),
                   ]),
                   Expanded(
                     child: FutureBuilder<List<Tag>>(
@@ -300,10 +364,10 @@ class _AddMediaState extends State<AddMedia> {
                                 });
                           }
                         }),
-                  ),
+                  ),/*
                   ButtonBar(
                     children: [
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () async => {
                                 dbhelp.curTitle = controllerTitle.text,
                                 dbhelp.curType = controllerType.text,
@@ -338,7 +402,7 @@ class _AddMediaState extends State<AddMedia> {
                         child: Text('Cancel'),
                       ),
                     ],
-                  )
+                  )*/
                 ],
               ),
             )))));
@@ -563,10 +627,47 @@ class _EditMediaState extends State<EditMedia> {
                     //initialValue: dbhelp.curNotes,
                     controller: controllerNotes,
                   ),
-                  Row(children: [
+                  Row(children: 
+                  [
+                    
                     ElevatedButton(
                         onPressed: () => {runApp(EditTags())},
                         child: Text('Edit Tags')),
+                      ElevatedButton(
+                          onPressed: () async => {
+                                dbhelp.curTitle = controllerTitle.text,
+                                dbhelp.curType = controllerType.text,
+                                dbhelp.curLeng = controllerLength.text,
+                                dbhelp.curParts = controllerParts.text,
+                                dbhelp.curNotes = controllerNotes.text,
+                                await dbhelp.upDateMediaCollection(),
+                                dbhelp.tagBool =
+                                    List.filled(dbhelp.tagBool.length, false),
+                                /*
+                                upDateMedia(
+                                    controllerTitle.text,
+                                    controllerType.text,
+                                    controllerLength.text,
+                                    controllerParts.text,
+                                    controllerNotes.text,
+                                    editID,
+                                    tagsbool),
+                                    */
+                                runApp(MainApp())
+                              },
+                          child: Text('Submit')),
+                      ElevatedButton(
+                          onPressed: () => {runApp(MainApp())},
+                          child: Text('Cancel')),
+                      Spacer(),
+                      ElevatedButton(
+                          onPressed: () async => {
+                                await dbhelp.deleteColl(),
+                                dbhelp.tagBool =
+                                    List.filled(dbhelp.tagBool.length, false),
+                                runApp(MainApp())
+                              },
+                          child: Text('Delete')),
                   ]),
                   Expanded(
                     child: FutureBuilder<List<Tag>>(
@@ -591,12 +692,12 @@ class _EditMediaState extends State<EditMedia> {
                           }
                         }),
                   ),
-                  ButtonBar(
+                  /*ButtonBar(
                     children: [
                       ElevatedButton(
                           onPressed: () => {runApp(MainApp())},
                           child: Text('Cancel')),
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () async => {
                                 await dbhelp.deleteColl(),
                                 dbhelp.tagBool =
@@ -604,7 +705,7 @@ class _EditMediaState extends State<EditMedia> {
                                 runApp(MainApp())
                               },
                           child: Text('Delete')),
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () async => {
                                 dbhelp.curTitle = controllerTitle.text,
                                 dbhelp.curType = controllerType.text,
@@ -628,7 +729,7 @@ class _EditMediaState extends State<EditMedia> {
                               },
                           child: Text('Submit')),
                     ],
-                  ),
+                  ),*/
                 ],
               ),
             )))));
@@ -784,6 +885,23 @@ class _FilterState extends State<Filter> {
                     decoration: InputDecoration(labelText: 'Title'),
                     controller: controllerTitle,
                   ),
+                  ButtonBar(
+                    children: [
+                      ElevatedButton(
+                          onPressed: () => {
+                                print("D"),
+                                print(dbhelp.m),
+                                dbhelp.curTitle = controllerTitle.text,
+                                print(dbhelp.curTitle),
+                                runApp(MainApp())
+                              },
+                          child: Text('Submit')),
+                        ElevatedButton(
+                          onPressed: () =>
+                              {dbhelp.m = false, runApp(MainApp())},
+                          child: Text('Cancel')),
+                    ],
+                  ),
                   Expanded(
                     child: FutureBuilder<List<Tag>>(
                       future: _futureTags(),
@@ -831,14 +949,14 @@ class _FilterState extends State<Filter> {
                         }
                       },
                     ),
-                  ),
+                  ),/*
                   ButtonBar(
                     children: [
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () =>
                               {dbhelp.m = false, runApp(MainApp())},
                           child: Text('Cancel')),
-                      TextButton(
+                      ElevatedButton(
                           onPressed: () => {
                                 print("D"),
                                 print(dbhelp.m),
@@ -848,7 +966,7 @@ class _FilterState extends State<Filter> {
                               },
                           child: Text('Submit')),
                     ],
-                  )
+                  )*/
                 ],
               );
             }),
