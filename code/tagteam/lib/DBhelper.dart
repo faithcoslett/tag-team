@@ -138,7 +138,7 @@ class DBhelper {
       */
       m = false;
       return selectedMedia;
-    } else if (curTitle.isNotEmpty) {
+    } else if (curTitle.isNotEmpty && m) {
       print("B");
       final medi = await isar.mediaCollections
           .filter()
