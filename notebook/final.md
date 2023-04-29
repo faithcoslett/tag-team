@@ -33,7 +33,7 @@ There are several differences between the expected plan from the first semester 
 | Programmed in Java or Kotlin                                                                   | Programmed in Flutter framework of Dart                         |
 | SQL database package                                                                           | Isar database package                                           |
 | Have default set of tags preinstalled on app                                                   | Set of tags populated only by custom tags                       |
-| Have search field work on all fields                                                           | Search field only works on title field                          |
+| Have search work on all fields                                                                 | Search only works on title field                                |
 | Rough versions of frontend/backend/database all implemented at once then improved on in cycles | Functioning version of each component implemented one at a time |
 
 ---
@@ -47,14 +47,14 @@ Our final app is a cross-platform, user-generated database designed for entries 
 - No default set of tags
 - Only option for organization is one large list
 - Non-tag search can only be done on title field
-- Not published yet on any platform, so no persistant data between runs of the program
+- Not published yet on any platform, so no persistent data between runs of the program
 
 #### C. Future direction
 - Further develop look of the interface
 - Include default set of tags with the app
 - Allow for creation of sublists
 - Allow for user to search based on any field
-- Have persistant data
+- Have persistent data
 
 #### D. Statement of work
 The team worked well together due to frequent communication and equal delegation of work. The roles and work were split up as follows:
@@ -73,11 +73,11 @@ The team worked well together due to frequent communication and equal delegation
 - Open group communication is valuable. We kept each other updated on new issues and on our individual work progress, which kept us all on the same page. This was also crucial to coordinating our code pushes, since much of our development work needed to be done in the same file.
 
 #### B. What we'd change if we did it all over again
-- Decide on the specific software components we'll use and test their compatibility during semester one. This would have prevented the sudden pivot we had to make later in the project when our planned SQL package did not support the app running on the web.
-- Dedicate more time early in the semester so there is less crunch-time in the second half. Our schedules were busy and we were often unable to work on the project when we planned to due to other responsibilities or surprises, and this would have been easier to manage if we focused on code implementation earlier. This also would have given us more development time to address the limitations mentioned above. 
+- Decide on the specific software components we'll use and test their compatibility during the first semester. This would have prevented the sudden pivot we had to make later in the project when our planned SQL package did not support the app running on the web.
+- Work more early in the semester so there is less crunch-time later. Our schedules were busy and we were often unable to work on the project when we planned to due to other responsibilities or surprises, and this would have been easier to manage if we focused on code implementation sooner. This also would have given us more development time to address the limitations mentioned above. 
 
 #### C. Advice to future teams 
 - Don't hesitate to ask your team members for help if you're facing a challenge, or being honest about where you're at in your share of the work.
 - Dedicate time to the project early, even if deadlines seem far away.
 - Create an online space that allows for easy group communication and sharing of files from anywhere, such as a Discord channel.
-- Invest in the planning stage of the project, especially in semester one. This includes choosing specific components and testing their viability for your ideas.
+- Invest in the planning stage of the project, especially in the first semester. This includes choosing specific components and testing their viability for your ideas.
