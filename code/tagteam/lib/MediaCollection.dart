@@ -6,17 +6,19 @@ import 'package:path/path.dart';
 import 'package:isar/isar.dart';
 import 'Tag.dart';
 
-part 'Title.g.dart';
+part 'MediaCollection.g.dart';
 
 @Collection()
-class Title {
+class MediaCollection {
   int id = Isar.autoIncrement;
   String? titleText;
-  String? type;     // media type, book/show/podcast/movie/etc
-  String? length;   // length of media, String leaves it open for user to either use "long/medium/short" values or
-                    // specify hours and minutes
-  int? parts;       // the number of parts, if it's a series
-  String? notes;    // open space for user to leave any note on the entry
+  String? type; // media type, book/show/podcast/movie/etc
+  String?
+      length; // length of media, String leaves it open for user to either use "long/medium/short" values or
+  // specify hours and minutes
+  int? parts; // the number of parts, if it's a series
+  String? notes; // open space for user to leave any note on the entry
   // vvvvv because of this we will have to do linkproperty.load and linkproperty.save later on because they are lazy >:(
   final tag = IsarLinks<Tag>();
+  //IsarLinks<Tag>? tag;
 }
